@@ -19,7 +19,6 @@ from gliacore.core.hardware import HardwareSupervisor
 from gliacore.core.registry import NeuronRegistry
 from gliacore.core.model_runner import ModelRunner
 from gliacore.synapse.bus import SynapseBus
-from gliacore.synapse.messages import SynapseMessage, MessageType
 from gliacore.memory.working import WorkingMemory
 from gliacore.memory.storage import KnowledgeStorage
 from gliacore.memory.hierarchy import MemoryHierarchy
@@ -30,7 +29,7 @@ from gliacore.neurons.planner import PlannerNeuron
 from gliacore.neurons.math_verifier import MathVerifierNeuron
 from gliacore.neurons.coder import CoderNeuron
 
-from gliacore.routing.router import AdaptiveRouter, TaskDifficulty
+from gliacore.routing.router import AdaptiveRouter
 from gliacore.reasoning.engine import AdvancedReasoningEngine
 from gliacore.agent.planner import AutonomousAgent
 from gliacore.plugins.base import PluginManager
@@ -431,6 +430,126 @@ class NeuralCore:
             }
 
             return synthesis
+
+
+    def process_stream(self, prompt: str, task_id: Optional[str] = None, session_id: Optional[str] = None):
+        """
+        Event-driven streaming execution generator.
+        Yields stage transition events, token streams, and final synthesis payload.
+        """
+        task_id = task_id or str(uuid.uuid4())
+        start_time = time.perf_counter()
+
+        # Stage 1: Reflex & Security Screening
+        t0 = time.perf_counter()
+        reflex_res = self.reflex_neuron.run({"prompt": prompt})
+        t_reflex = round((time.perf_counter() - t0) * 1000, 2)
+        category = reflex_res["result"].get("category", "GENERAL")
+        is_blocked = (category == "BLOCKED")
+
+        yield {
+            "event": "stage",
+            "stage": "Reflex Screening & Security",
+            "neuron": self.reflex_neuron.neuron_id,
+            "state": "blocked" if is_blocked else "completed",
+            "duration_ms": t_reflex,
+            "output": reflex_res["result"]
+        }
+
+        if is_blocked:
+            self.total_blocked_tasks += 1
+            total_elapsed_ms = (time.perf_counter() - start_time) * 1000
+            yield {
+                "event": "done",
+                "task_id": task_id,
+                "session_id": session_id,
+                "status": "BLOCKED",
+                "reason": reflex_res["result"].get("reason"),
+                "results": {"blocked": True, "reason": reflex_res["result"].get("reason")},
+                "total_latency_ms": round(total_elapsed_ms, 2),
+                "response_markdown": f"**Execution Blocked by Safety Guardrail**\n\nReason: {reflex_res['result'].get('reason')}"
+            }
+            return
+
+        # Stage 2: Adaptive Routing
+        t0 = time.perf_counter()
+        route_decision = self.router.route(prompt, category)
+        t_route = round((time.perf_counter() - t0) * 1000, 2)
+
+        yield {
+            "event": "stage",
+            "stage": "Adaptive Neural Routing",
+            "neuron": "adaptive_router",
+            "state": "completed",
+            "duration_ms": t_route,
+            "output": {
+                "difficulty": route_decision.difficulty.value,
+                "difficulty_score": route_decision.difficulty_score,
+                "required_neurons": route_decision.required_neurons,
+                "required_tools": route_decision.required_tools
+            }
+        }
+
+        # Stage 3: Memory Retrieval
+        t0 = time.perf_counter()
+        relevant_experiences = self.memory.retrieve(prompt, limit=2)
+        t_mem = round((time.perf_counter() - t0) * 1000, 2)
+
+        yield {
+            "event": "stage",
+            "stage": "4-Tier Memory Retrieval",
+            "neuron": "memory_hierarchy",
+            "state": "completed",
+            "duration_ms": t_mem,
+            "output": {"retrieved_memories": len(relevant_experiences)}
+        }
+
+        # Stage 4: Cognitive Planning if required
+        if route_decision.requires_planning:
+            t0 = time.perf_counter()
+            planner_res = self.planner_neuron.run({"prompt": prompt, "category": category})
+            t_plan = round((time.perf_counter() - t0) * 1000, 2)
+            yield {
+                "event": "stage",
+                "stage": "Cognitive Planning",
+                "neuron": self.planner_neuron.neuron_id,
+                "state": "completed",
+                "duration_ms": t_plan,
+                "output": planner_res["result"]
+            }
+
+        # Execute standard pipeline to obtain full verified results
+        final_result = self.process(prompt, task_id=task_id, session_id=session_id)
+
+        # Stream reasoning / explanation tokens
+        reasoning_text = ""
+        results = final_result.get("results", {})
+        if "reasoning" in results and isinstance(results["reasoning"], dict):
+            reasoning_text = results["reasoning"].get("text", "")
+
+        if reasoning_text:
+            chunks = reasoning_text.split(" ")
+            for idx, chunk in enumerate(chunks):
+                token = chunk + (" " if idx < len(chunks) - 1 else "")
+                yield {
+                    "event": "token",
+                    "token": token
+                }
+
+        # Final completion event
+        yield {
+            "event": "done",
+            "task_id": task_id,
+            "session_id": session_id,
+            "status": final_result["status"],
+            "category": final_result["category"],
+            "difficulty": final_result["difficulty"],
+            "consensus_score": final_result["consensus_score"],
+            "total_latency_ms": final_result["total_latency_ms"],
+            "results": final_result["results"],
+            "reflection_repairs": final_result["reflection_repairs"],
+            "execution_timeline": final_result["execution_timeline"]
+        }
 
     def get_system_telemetry(self) -> Dict[str, Any]:
         """Aggregate telemetry for Chat UI dashboard."""

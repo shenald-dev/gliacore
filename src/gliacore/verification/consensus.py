@@ -1,16 +1,18 @@
 """
-Verification & Cross-Neuron Consensus Engine for NEURON
-Detects contradictions, validates artifacts, and assigns confidence calibrations.
+Verification & Cross-Neuron Consensus Engine for GliaCore.
+Detects contradictions, validates artifacts, executes schema verification,
+and assigns confidence calibrations.
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
+from gliacore.verification.schema import JSONExtractor, SchemaValidator
 
 
 class VerificationEngine:
     """
     Independent checking engine.
-    Ensures that neuron outputs are verified against deterministic tools
-    and free of logical contradictions.
+    Ensures that neuron outputs are verified against deterministic tools,
+    conform to schemas, and are free of logical contradictions.
     """
 
     @staticmethod
@@ -75,6 +77,35 @@ class VerificationEngine:
                 "confidence": 0.90,
                 "reason": "Security and intent verified",
                 "details": data
+            }
+
+        elif artifact_type == "schema":
+            raw_content = data.get("raw", "")
+            schema = data.get("schema", {})
+            ok, parsed, msg = JSONExtractor.parse_and_repair(raw_content)
+            if not ok or parsed is None:
+                return {
+                    "verified": False,
+                    "confidence": 0.0,
+                    "reason": f"Failed to parse or repair JSON: {msg}",
+                    "details": {"raw": raw_content, "error": msg}
+                }
+
+            if schema:
+                valid, schema_errs = SchemaValidator.validate(parsed, schema)
+                if not valid:
+                    return {
+                        "verified": False,
+                        "confidence": 0.3,
+                        "reason": f"Schema validation errors: {', '.join(schema_errs)}",
+                        "details": {"parsed": parsed, "errors": schema_errs}
+                    }
+
+            return {
+                "verified": True,
+                "confidence": 0.98,
+                "reason": f"JSON parsed and validated successfully ({msg})",
+                "details": {"parsed": parsed}
             }
 
         return {

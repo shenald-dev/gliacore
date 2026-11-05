@@ -2,7 +2,6 @@
 Unit tests for Synapse Binary Message Serialization and Bus
 """
 
-import pytest
 from gliacore.synapse.messages import SynapseMessage, MessageType
 from gliacore.synapse.bus import SynapseBus
 

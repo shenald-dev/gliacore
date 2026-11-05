@@ -3,10 +3,8 @@ Document Indexer & Evidence Ingestion Engine for PROJECT: NEURON
 Extracts, chunks, and indexes local files (TXT, MD, JSON, Python) into semantic memory.
 """
 
-import os
-import json
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 from gliacore.memory.storage import KnowledgeStorage
 
 

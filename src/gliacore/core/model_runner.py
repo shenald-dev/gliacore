@@ -3,11 +3,9 @@ Foundation Model Runner & Inference Manager for PROJECT: GLIACORE / NEURON
 Manages Qwen2.5 local model inference, quantization, context windows, and VRAM containment.
 """
 
-import os
-import gc
 import time
 import threading
-from typing import Dict, Any, Optional, Generator
+from typing import Dict, Any, Optional
 from dataclasses import dataclass
 
 import torch
@@ -172,7 +170,7 @@ class ModelRunner:
                     load_kwargs["device_map"] = "cuda:0"
                 else:
                     load_kwargs["dtype"] = torch.float32
-                    load_kwargs["device_map"] = "cpu"
+                    load_kwargs["low_cpu_mem_usage"] = False
 
                 self.model = AutoModelForCausalLM.from_pretrained(meta["repo_id"], **load_kwargs)
                 self.is_real_weights = True
@@ -217,7 +215,7 @@ class ModelRunner:
             if self.is_real_weights and self.model is not None and self.tokenizer is not None:
                 try:
                     system_prompt = (
-                        "You are GliaCore 0.3.0, a premier edge-optimized collective intelligence system "
+                        "You are GliaCore 0.4.0, a premier edge-optimized collective intelligence system "
                         "running locally with dedicated NVIDIA GPU hardware acceleration. You excel in analytical "
                         "reasoning, software engineering, mathematics, full-stack web development, and structured communication. "
                         "You write complete, production-ready code (HTML, CSS, JavaScript, Python, etc.). "
@@ -283,6 +281,71 @@ class ModelRunner:
                 "mode": "symbolic_synthesis"
             }
 
+    def generate_stream(self, prompt: str, max_new_tokens: int = 512):
+        """
+        Execute streaming inference. If real weights are loaded, yields incremental tokens.
+        Otherwise, yields naturally chunked neural-symbolic synthesis tokens.
+        """
+        with self.lock:
+            if self.is_real_weights and self.model is not None and self.tokenizer is not None:
+                try:
+                    import threading
+                    from transformers import TextIteratorStreamer
+
+                    system_prompt = (
+                        "You are GliaCore 0.4.0, a premier edge-optimized collective intelligence system "
+                        "running locally with dedicated NVIDIA GPU hardware acceleration. You excel in analytical "
+                        "reasoning, software engineering, mathematics, full-stack web development, and structured communication. "
+                        "You write complete, production-ready code (HTML, CSS, JavaScript, Python, etc.)."
+                    )
+                    messages = [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": prompt}
+                    ]
+
+                    if hasattr(self.tokenizer, "apply_chat_template"):
+                        formatted_prompt = self.tokenizer.apply_chat_template(
+                            messages,
+                            tokenize=False,
+                            add_generation_prompt=True
+                        )
+                    else:
+                        formatted_prompt = prompt
+
+                    inputs = self.tokenizer(formatted_prompt, return_tensors="pt")
+                    model_device = getattr(self.model, "device", self.device)
+                    inputs = {k: v.to(model_device) for k, v in inputs.items()}
+
+                    streamer = TextIteratorStreamer(self.tokenizer, skip_prompt=True, skip_special_tokens=True)
+                    generation_kwargs = dict(
+                        **inputs,
+                        streamer=streamer,
+                        max_new_tokens=max_new_tokens,
+                        do_sample=True,
+                        temperature=0.7,
+                        top_p=0.9,
+                        repetition_penalty=1.1,
+                        pad_token_id=self.tokenizer.eos_token_id
+                    )
+
+                    thread = threading.Thread(target=self.model.generate, kwargs=generation_kwargs)
+                    thread.start()
+
+                    for new_text in streamer:
+                        yield new_text
+
+                    thread.join()
+                    return
+                except Exception as e:
+                    print(f"[ModelRunner Stream Error]: {e}")
+
+        # Neural-symbolic streaming fallback
+        text_response = self._synthesize_symbolic_response(prompt)
+        words = text_response.split(" ")
+        for i, word in enumerate(words):
+            yield word + (" " if i < len(words) - 1 else "")
+
+
     def _synthesize_symbolic_response(self, prompt: str) -> str:
         """
         Generate rich, helpful, human-like responses for general conversation,
@@ -294,7 +357,7 @@ class ModelRunner:
         greeting_words = ["hi", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening", "howdy", "sup", "yo", "hola"]
         if any(p == g or p.startswith(g + " ") or p.startswith(g + "!") or p.startswith(g + ",") for g in greeting_words):
             return (
-                "Hello!  I am **GliaCore 0.3.0** (formerly PROJECT: NEURON) — an edge-optimized micro-AI collective intelligence system running locally on your hardware (NVIDIA RTX 2050 4GB VRAM / 16GB RAM).\n\n"
+                "Hello!  I am **GliaCore 0.4.0** (formerly PROJECT: NEURON) — an edge-optimized micro-AI collective intelligence system running locally on your hardware (NVIDIA RTX 2050 4GB VRAM / 16GB RAM).\n\n"
                 "I operate using an **astrocyte-neuron architecture**: specialized micro-neurons communicate over binary MessagePack synapses, coordinated by an astrocyte orchestrator that manages memory and VRAM budgets.\n\n"
                 "### [Quickstart] Try asking me these in the chat:\n"
                 "- [Math] **Math & Equations:** `Calculate 145 * 28 + 3600 / 15` or `Solve 5*x^2 - 45 = 0` *(exact SymPy symbolic solving, 0% hallucination)*\n"
@@ -308,7 +371,7 @@ class ModelRunner:
         # 2. Identity & Capability Questions
         if any(kw in p for kw in ["who are you", "what are you", "what can you do", "what is this", "what is gliacore", "what is neuron", "tell me about yourself", "help", "capabilities", "commands"]):
             return (
-                "### [Intelligence] GliaCore 0.3.0 Ecosystem\n\n"
+                "### [Intelligence] GliaCore 0.4.0 Ecosystem\n\n"
                 "I am **GliaCore**, an open-source, edge-optimized collective intelligence ecosystem designed to run distributed intelligence on consumer edge hardware with 4 GB VRAM.\n\n"
                 "#### Core Subsystems & Capabilities:\n"
                 "1. **Reflex & Security Neuron (`ReflexNeuron`):** Sub-millisecond regex & AST gateway blocking prompt injections and destructive commands (`rm -rf`, fork bombs, shell escapes) in <0.2 ms.\n"

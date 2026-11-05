@@ -3,7 +3,6 @@ CLI Entry Point for PROJECT: NEURON
 Enables launching the Interactive Chat UI via `python -m neuron`.
 """
 
-import sys
 import argparse
 from gliacore.ui.server import run
 

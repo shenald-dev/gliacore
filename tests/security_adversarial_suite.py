@@ -11,22 +11,18 @@ Evaluates 7 distinct attack classes:
 """
 
 import sys
-import os
-import time
 import json
 import base64
 import threading
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 # Ensure src is on sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from gliacore.core.engine import NeuralCore
-from gliacore.neurons.reflex import ReflexNeuron
 from gliacore.tools.code_sandbox import CodeSandbox
 from gliacore.memory.storage import KnowledgeStorage
-from gliacore.synapse.messages import SynapseMessage, MessageType
 
 
 def test_command_injection(core: NeuralCore) -> Dict[str, Any]:
@@ -83,7 +79,6 @@ def test_dos_and_infinite_loops() -> Dict[str, Any]:
 
     th = threading.Thread(target=run_loop)
     th.daemon = True
-    t0 = time.perf_counter()
     th.start()
     th.join(timeout=1.0)
     
@@ -111,13 +106,13 @@ def test_sql_injection() -> Dict[str, Any]:
     # Attempt SQL injection via search_keyword
     sqli_payload = "' OR 1=1; DROP TABLE knowledge; --"
     try:
-        docs = storage.search_keyword(sqli_payload)
+        storage.search_keyword(sqli_payload)
         # Verify table still exists
-        cursor = storage.conn.execute("SELECT count(*) FROM knowledge")
+        storage.conn.execute("SELECT count(*) FROM knowledge")
         results.append({
             "attack": "SQL Injection in Search",
             "vulnerable": False,
-            "detail": f"Parameterized query safely contained payload (Query succeeded without dropping table)"
+            "detail": "Parameterized query safely contained payload (Query succeeded without dropping table)"
         })
     except Exception as e:
         results.append({

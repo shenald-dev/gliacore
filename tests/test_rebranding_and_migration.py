@@ -7,15 +7,13 @@ Validates:
 4. Environment variable priority (GLIACORE_* with fallback to NEURON_*)
 """
 
-import os
 import sqlite3
 import pytest
-import warnings
 
 
 def test_gliacore_package_metadata():
     import gliacore
-    assert gliacore.__version__ == "0.3.0"
+    assert gliacore.__version__ == "0.4.0"
     assert "GliaCore" in gliacore.__all__
     assert "NeuralCore" in gliacore.__all__
     assert "HardwareSupervisor" in gliacore.__all__
@@ -37,13 +35,16 @@ def test_gliacore_engine_alias_and_execution():
 
 
 def test_legacy_neuron_backward_compatibility():
+    import sys
+    if "neuron" in sys.modules:
+        del sys.modules["neuron"]
     with pytest.warns(FutureWarning, match="The 'neuron' package namespace is deprecated"):
         import neuron
 
     assert hasattr(neuron, "GliaCore")
     assert hasattr(neuron, "NeuralCore")
     assert hasattr(neuron, "HardwareSupervisor")
-    assert neuron.__version__ == "0.3.0"
+    assert neuron.__version__ == "0.4.0"
 
 
 def test_hardware_supervisor_environment_variable_hierarchy(monkeypatch):

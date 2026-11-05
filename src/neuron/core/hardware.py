@@ -3,12 +3,11 @@ Hardware Supervision & Memory Guard for PROJECT: NEURON
 Enforces strict 4GB VRAM and 16GB System RAM ceilings.
 """
 
-import os
 import gc
 import psutil
 import torch
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 from contextlib import contextmanager
 
 # Hardware constraints for RTX 2050 (HP Victus)

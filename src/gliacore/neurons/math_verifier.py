@@ -3,7 +3,7 @@ Mathematical Intelligence & Verification Neuron for NEURON
 Deterministic numerical and symbolic processing via SymPy.
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 import re
 from gliacore.neurons.base import BaseNeuron
 from gliacore.tools.math_engine import MathEngine

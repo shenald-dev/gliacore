@@ -7,11 +7,9 @@ Evaluates 4 configurations fairly across 50 diverse tasks:
 4. Config C:    Collaborative NEURON Network (Synapse bus + Verifier + Tools + Core)
 """
 
-import os
 import sys
 import json
 import time
-import psutil
 from pathlib import Path
 from typing import Dict, Any, List
 import statistics
@@ -24,7 +22,6 @@ from gliacore.core.engine import NeuralCore
 from gliacore.core.hardware import HardwareSupervisor
 from gliacore.neurons.math_verifier import MathVerifierNeuron
 from gliacore.neurons.coder import CoderNeuron
-from gliacore.neurons.reflex import ReflexNeuron
 from gliacore.neurons.planner import PlannerNeuron
 from gliacore.tools.math_engine import MathEngine
 from gliacore.tools.ast_parser import ASTParserTool

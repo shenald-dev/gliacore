@@ -5,14 +5,6 @@ Please update your imports to 'import gliacore'.
 """
 
 import warnings
-
-warnings.warn(
-    "The 'neuron' package namespace is deprecated and has been rebranded to 'gliacore'. "
-    "Please update your imports to 'import gliacore'.",
-    FutureWarning,
-    stacklevel=2
-)
-
 from gliacore import (
     GliaCore,
     NeuralCore,
@@ -26,6 +18,13 @@ from gliacore import (
     __license__,
 )
 
+warnings.warn(
+    "The 'neuron' package namespace is deprecated and has been rebranded to 'gliacore'. "
+    "Please update your imports to 'import gliacore'.",
+    FutureWarning,
+    stacklevel=2
+)
+
 __all__ = [
     "GliaCore",
     "NeuralCore",
@@ -34,4 +33,7 @@ __all__ = [
     "SynapseBus",
     "SynapseMessage",
     "MessageType",
+    "__version__",
+    "__author__",
+    "__license__",
 ]

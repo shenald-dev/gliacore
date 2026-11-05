@@ -4,7 +4,7 @@ Powered by SymPy for symbolic algebra, arithmetic, and verification.
 """
 
 import sympy as sp
-from typing import Dict, Any, Union, Optional
+from typing import Dict, Any
 
 
 class MathEngine:

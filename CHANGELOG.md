@@ -5,6 +5,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [0.4.0] — 2026-11-05 (Model Context Protocol Gateway & Token Streaming Evolution)
+
+### Model Context Protocol (MCP) Subsystem
+- **Full MCP 2024-11-05 Specification Implementation:** Introduced native MCP server (`gliacore.mcp.server.GliaCoreMCPServer`) and client (`gliacore.mcp.client.GliaCoreMCPClient`) implementing standard JSON-RPC 2.0.
+- **Exposed Flagship Symbolic Tools:**
+  1. `gliacore_reflex_scan`: Sub-millisecond regex & AST security gateway (<0.2ms latency).
+  2. `gliacore_math_solve`: Exact SymPy algebraic solving and calculus derivation (zero hallucination).
+  3. `gliacore_code_sandbox`: AST-validated secure Python execution sandbox with runtime telemetry.
+  4. `gliacore_memory_query`: Multi-tier search across working, episodic, semantic, and archival memory.
+  5. `gliacore_solve`: End-to-end task routing and neural-symbolic execution through GliaCore's collective intelligence.
+  6. `gliacore_document_query`: Grounded evidence and citation retrieval across ingested files.
+  7. `gliacore_system_telemetry`: Real-time GPU VRAM budget, system RAM, and neuron fleet statistics.
+- **Claude Desktop & Cursor Ready:** Standard stdio transport enables instant one-click connection via `gliacore mcp`.
+- **REST & HTTP MCP Transport:** Added `/api/mcp` JSON-RPC endpoint and `/api/mcp/tools` introspection endpoint in GliaCore Studio web server.
+- **Backward Compatibility:** Provided legacy stubs in `neuron.mcp` forwarding seamlessly to `gliacore.mcp`.
+
+### Real-Time SSE Token & Stage Streaming
+- **Server-Sent Events (SSE) Endpoint:** Added `/api/chat/stream` yielding live stage transition events (`Reflex Screening`, `Adaptive Neural Routing`, `4-Tier Memory Retrieval`), incremental token chunks, and final verification payloads.
+- **Streaming Model Runner:** Added `generate_stream(...)` to `ModelRunner` leveraging HuggingFace `TextIteratorStreamer` on CUDA or naturally chunked token synthesis in neural-symbolic mode.
+- **Event-Driven Collective Intelligence Pipeline:** Added `process_stream(...)` to `GliaCore` orchestrator for real-time observability into neuron activations.
+
+### Schema-Constrained Decoding & JSON Auto-Repair
+- **Syntactic Auto-Repair Engine:** Built `gliacore.verification.schema.JSONExtractor` recovering valid JSON from markdown code blocks, conversational preambles, and malformed LLM outputs.
+- **Heuristic Fixes:** Automatically repairs Python literals (`True`/`False`/`None` -> `true`/`false`/`null`), unquoted keys, single quotes, and trailing commas.
+- **Schema Validation:** Built `gliacore.verification.schema.SchemaValidator` for lightweight type and required-property verification without external heavyweight dependencies.
+- **Consensus Integration:** Enhanced `VerificationEngine` with `"schema"` artifact verification.
+
+### Core Runtime & Windows CPU Stability
+- **Windows CPU Acceleration Fix:** Fixed fatal memory-mapping access violation in `accelerate`'s multi-threaded `_materialize_copy` by disabling `device_map="cpu"` and setting `low_cpu_mem_usage = False` on CPU targets.
+- **CLI Subcommand Suite:** Enhanced CLI entry points to support `gliacore mcp`, `gliacore serve --host <host> --port <port>`, and `gliacore version`.
+
+### Testing & Code Quality
+- **Test Suite Expansion:** Expanded test suite from 43 to **62 passed tests (100% pass rate)** including new test suites `test_mcp_gateway.py`, `test_schema_engine.py`, and `test_streaming.py`.
+- **Zero Lint Errors:** Fixed 144 initial lint warnings down to 0 errors via Ruff.
+
+---
+
 ## [0.3.0] — 2026-11-05 (First Public GitHub Release Checkpoint)
 
 ### Major Brand Transformation

@@ -5,7 +5,7 @@ linear algebra, vector metrics, and probability distributions.
 """
 
 import math
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 
 
 class NumPyEngine:

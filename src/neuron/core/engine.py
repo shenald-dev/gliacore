@@ -9,6 +9,7 @@ Integrates:
 - Self-Improvement Telemetry Loop
 """
 
+import os
 import time
 import uuid
 import json
@@ -19,7 +20,6 @@ from neuron.core.hardware import HardwareSupervisor
 from neuron.core.registry import NeuronRegistry
 from neuron.core.model_runner import ModelRunner
 from neuron.synapse.bus import SynapseBus
-from neuron.synapse.messages import SynapseMessage, MessageType
 from neuron.memory.working import WorkingMemory
 from neuron.memory.storage import KnowledgeStorage
 from neuron.memory.hierarchy import MemoryHierarchy
@@ -30,7 +30,7 @@ from neuron.neurons.planner import PlannerNeuron
 from neuron.neurons.math_verifier import MathVerifierNeuron
 from neuron.neurons.coder import CoderNeuron
 
-from neuron.routing.router import AdaptiveRouter, TaskDifficulty
+from neuron.routing.router import AdaptiveRouter
 from neuron.reasoning.engine import AdvancedReasoningEngine
 from neuron.agent.planner import AutonomousAgent
 from neuron.plugins.base import PluginManager

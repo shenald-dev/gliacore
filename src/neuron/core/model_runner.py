@@ -3,11 +3,9 @@ Foundation Model Runner & Inference Manager for PROJECT: GLIACORE / NEURON
 Manages Qwen2.5 local model inference, quantization, context windows, and VRAM containment.
 """
 
-import os
-import gc
 import time
 import threading
-from typing import Dict, Any, Optional, Generator
+from typing import Dict, Any, Optional
 from dataclasses import dataclass
 
 import torch
@@ -172,7 +170,7 @@ class ModelRunner:
                     load_kwargs["device_map"] = "cuda:0"
                 else:
                     load_kwargs["dtype"] = torch.float32
-                    load_kwargs["device_map"] = "cpu"
+                    load_kwargs["low_cpu_mem_usage"] = False
 
                 self.model = AutoModelForCausalLM.from_pretrained(meta["repo_id"], **load_kwargs)
                 self.is_real_weights = True

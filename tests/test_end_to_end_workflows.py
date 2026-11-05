@@ -13,17 +13,10 @@ Independently verifies:
 10. Live hardware and synapse telemetry reporting
 """
 
-import os
-import json
-import sqlite3
 import asyncio
-import pytest
-from pathlib import Path
-from aiohttp import web
 from aiohttp.test_utils import TestClient, TestServer
 
 from gliacore.ui.server import GliaCoreServer
-from gliacore.core.engine import GliaCore
 
 
 def run_async(coro):

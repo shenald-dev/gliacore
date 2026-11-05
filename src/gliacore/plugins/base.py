@@ -5,7 +5,7 @@ without modifying the core orchestrator.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from dataclasses import dataclass, field, asdict
 
 

@@ -6,12 +6,11 @@ Evaluates 3 architectural paradigms on HP Victus RTX 2050:
 3. Experiment C: Collaborative NEURON Network (Full Synapses + Verifier + Tools)
 """
 
-import os
 import sys
 import json
 import time
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 # Ensure src is on sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
@@ -21,7 +20,6 @@ from gliacore.core.engine import NeuralCore
 from gliacore.core.hardware import HardwareSupervisor
 from gliacore.neurons.math_verifier import MathVerifierNeuron
 from gliacore.neurons.coder import CoderNeuron
-from gliacore.neurons.reflex import ReflexNeuron
 
 
 def simulate_cuda_workload(supervisor: HardwareSupervisor, tensor_size_mb: float = 120.0):

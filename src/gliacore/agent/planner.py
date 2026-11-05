@@ -7,7 +7,7 @@ cancellation support, and auditable security logs.
 import time
 import uuid
 from enum import Enum
-from typing import Dict, Any, List, Optional, Callable
+from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field, asdict
 
 from gliacore.tools.repo_explorer import RepositoryExplorer

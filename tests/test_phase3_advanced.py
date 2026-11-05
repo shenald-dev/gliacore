@@ -12,7 +12,6 @@ Tests:
 
 import os
 import tempfile
-import pytest
 
 from gliacore.routing.router import AdaptiveRouter, TaskDifficulty
 from gliacore.reasoning.engine import AdvancedReasoningEngine
@@ -24,7 +23,6 @@ from gliacore.agent.planner import AutonomousAgent, TaskState
 from gliacore.plugins.base import PluginManager, PluginManifest, BasePlugin
 from gliacore.plugins.statistics_plugin import StatisticsPlugin
 from gliacore.learning.self_improvement import SelfImprovementEngine
-from gliacore.core.engine import NeuralCore
 
 
 # 1. Test Adaptive Router

@@ -8,7 +8,7 @@ import ast
 import json
 import time
 import subprocess
-from typing import Dict, Any, Optional, Set
+from typing import Dict, Any, Set
 
 FORBIDDEN_MODULES: Set[str] = {
     "os", "sys", "subprocess", "shutil", "socket", "ctypes", "pathlib", "pty",

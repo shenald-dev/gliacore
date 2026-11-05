@@ -5,10 +5,9 @@ symbolic-neural hybrid synthesis, and self-correction.
 """
 
 import time
-import ast
 import re
-from typing import Dict, Any, List, Optional
-from dataclasses import dataclass, field
+from typing import Dict, Any, List
+from dataclasses import dataclass
 
 from gliacore.tools.math_engine import MathEngine
 from gliacore.tools.ast_parser import ASTParserTool

@@ -4,7 +4,7 @@ Generates, statically inspects, and verifies code structures via GPU SLM and AST
 """
 
 import re
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 from neuron.neurons.base import BaseNeuron
 from neuron.tools.ast_parser import ASTParserTool
 from neuron.tools.code_sandbox import CodeSandbox
@@ -87,7 +87,7 @@ class CoderNeuron(BaseNeuron):
                     "Output ONLY the python code enclosed inside a ```python ``` markdown block. "
                     "Do not include conversational filler outside the code block."
                 )
-                coder_prompt = f"Implement in Python:\n{prompt}\nReturn complete implementation inside ```python ```."
+                coder_prompt = f"{system_prompt}\n\nTask: Implement in Python:\n{prompt}\nReturn complete implementation inside ```python ```."
                 gen = self.model_runner.generate(coder_prompt, max_new_tokens=384)
                 text = gen.get("text", "")
 

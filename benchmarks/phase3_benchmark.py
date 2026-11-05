@@ -9,14 +9,12 @@ Condition D: NEURON Phase 3 with Adaptive Routing & Reasoning (Difficulty-calibr
 Condition E: NEURON Phase 3 Full Ecosystem (Adaptive routing, reasoning, 4-tier memory hierarchy, self-improvement loop)
 """
 
-import os
 import sys
 import json
 import time
-import psutil
 import statistics
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 
 # Ensure src is on sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
@@ -26,13 +24,7 @@ from gliacore.core.hardware import HardwareSupervisor
 from gliacore.core.engine import NeuralCore
 from gliacore.neurons.math_verifier import MathVerifierNeuron
 from gliacore.neurons.coder import CoderNeuron
-from gliacore.neurons.reflex import ReflexNeuron
 from gliacore.neurons.planner import PlannerNeuron
-from gliacore.tools.math_engine import MathEngine
-from gliacore.tools.ast_parser import ASTParserTool
-from gliacore.routing.router import AdaptiveRouter, TaskDifficulty
-from gliacore.reasoning.engine import AdvancedReasoningEngine
-from gliacore.memory.hierarchy import MemoryHierarchy
 
 
 class MonolithRawEvaluator:

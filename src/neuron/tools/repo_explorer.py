@@ -6,7 +6,7 @@ Enables autonomous codebase exploration, AST symbol mapping, and dependency trac
 import os
 import ast
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 
 
 class RepositoryExplorer:

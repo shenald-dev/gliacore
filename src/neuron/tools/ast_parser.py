@@ -4,7 +4,7 @@ Statically validates code structure, syntax, and safety before execution.
 """
 
 import ast
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 
 
 class ASTParserTool:

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gliacore-ai"
-version = "0.3.0"
+version = "0.4.0"
 description = "An Edge-Optimized, Modular Micro-AI Collective Intelligence Ecosystem"
 authors = [
     { name = "Shenal Diluksha", email = "shenal@example.com" }

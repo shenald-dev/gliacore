@@ -7,8 +7,8 @@ and minimizes unnecessary neuron activations.
 import time
 import re
 from enum import Enum
-from typing import Dict, Any, List, Set, Optional
-from dataclasses import dataclass, field
+from typing import Dict, Any, List
+from dataclasses import dataclass
 
 
 class TaskDifficulty(str, Enum):
@@ -83,7 +83,6 @@ class AdaptiveRouter:
         Generates optimal routing decision for a given prompt and reflex classification.
         """
         start = time.perf_counter()
-        prompt_lower = prompt.lower()
         
         # 1. Critical / Blocked
         if reflex_category == "BLOCKED":

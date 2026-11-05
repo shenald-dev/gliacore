@@ -5,11 +5,8 @@ system monitoring, 4-tier memory explorer, autonomous agent execution, and plugi
 """
 
 import os
-import sys
-import json
 import asyncio
 from pathlib import Path
-from typing import Dict, Any
 
 from aiohttp import web
 
@@ -304,7 +301,7 @@ def run(host: str = "127.0.0.1", port: int = 8000) -> None:
     server = NeuronServer()
     print("=" * 70)
     print("PROJECT: NEURON 0.3.0 — ADVANCED COLLABORATIVE INTELLIGENCE PLATFORM")
-    print(f"Target Hardware: NVIDIA RTX 2050 (4 GB VRAM) | 16 GB System RAM")
+    print("Target Hardware: NVIDIA RTX 2050 (4 GB VRAM) | 16 GB System RAM")
     print(f"Server URL: http://{host}:{port}")
     print("Press Ctrl+C to terminate.")
     print("=" * 70)

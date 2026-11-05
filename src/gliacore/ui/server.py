@@ -1,19 +1,20 @@
 """
-Local Web Server & REST API for PROJECT: GLIACORE 0.3.0
+Local Web Server & REST API for PROJECT: GLIACORE 0.4.0
 Provides async endpoints for the Interactive Chat UI, live neural activity telemetry,
 system monitoring, 4-tier memory explorer, autonomous agent execution, and plugin management.
 """
 
 import os
-import sys
 import json
 import asyncio
+import threading
 from pathlib import Path
-from typing import Dict, Any
 
 from aiohttp import web
 
-from gliacore.core.engine import GliaCore, NeuralCore
+from gliacore.core.engine import GliaCore
+from gliacore.mcp.server import GliaCoreMCPServer
+from gliacore.verification.schema import JSONExtractor, SchemaValidator
 
 STATIC_DIR = Path(__file__).parent / "static"
 
@@ -24,6 +25,7 @@ NeuronServer = None
 class GliaCoreServer:
     def __init__(self, db_path=None, memory_db_path=None, auto_load_model: bool = True):
         self.core = GliaCore(db_path=db_path, memory_db_path=memory_db_path)
+        self.mcp_server = GliaCoreMCPServer(core=self.core)
         self.app = web.Application()
         self._setup_routes()
 
@@ -38,12 +40,19 @@ class GliaCoreServer:
     def _setup_routes(self) -> None:
         self.app.router.add_get("/", self.handle_index)
         self.app.router.add_post("/api/chat", self.handle_chat)
+        self.app.router.add_post("/api/chat/stream", self.handle_chat_stream)
         self.app.router.add_get("/api/telemetry", self.handle_telemetry)
         self.app.router.add_get("/api/neurons", self.handle_neurons)
         self.app.router.add_get("/api/model", self.handle_model_info)
         self.app.router.add_post("/api/model/load", self.handle_model_load)
         self.app.router.add_post("/api/model/unload", self.handle_model_unload)
         self.app.router.add_get("/api/history", self.handle_history)
+
+        # MCP and Schema Endpoints
+        self.app.router.add_post("/api/mcp", self.handle_mcp_jsonrpc)
+        self.app.router.add_get("/api/mcp/tools", self.handle_mcp_tools)
+        self.app.router.add_post("/api/schema/validate", self.handle_schema_validate)
+        self.app.router.add_post("/api/schema/repair", self.handle_schema_repair)
 
         # Phase 3 Advanced Capability Endpoints
         self.app.router.add_get("/api/memory", self.handle_memory_list)
@@ -294,8 +303,98 @@ class GliaCoreServer:
         insights = self.core.self_improvement.get_insights()
         return web.json_response(insights)
 
+
+    async def handle_chat_stream(self, request: web.Request) -> web.StreamResponse:
+        """Stream token generation and pipeline stages using Server-Sent Events (SSE)."""
+        try:
+            body = await request.json()
+        except Exception:
+            return web.json_response({"error": "Invalid JSON body"}, status=400)
+
+        prompt = body.get("prompt", "").strip()
+        if not prompt:
+            return web.json_response({"error": "Prompt cannot be empty"}, status=400)
+
+        session_id = body.get("session_id", "default")
+
+        response = web.StreamResponse(
+            status=200,
+            reason="OK",
+            headers={
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+            }
+        )
+        await response.prepare(request)
+
+        loop = asyncio.get_running_loop()
+        event_queue = asyncio.Queue()
+
+        def stream_worker():
+            try:
+                for event in self.core.process_stream(prompt, session_id=session_id):
+                    loop.call_soon_threadsafe(event_queue.put_nowait, event)
+            except Exception as ex:
+                loop.call_soon_threadsafe(event_queue.put_nowait, {"event": "error", "error": str(ex)})
+            finally:
+                loop.call_soon_threadsafe(event_queue.put_nowait, None)
+
+        worker_th = threading.Thread(target=stream_worker, daemon=True)
+        worker_th.start()
+
+        while True:
+            event = await event_queue.get()
+            if event is None:
+                break
+            event_type = event.get("event", "message")
+            payload = json.dumps(event)
+            await response.write(f"event: {event_type}\ndata: {payload}\n\n".encode("utf-8"))
+
+        return response
+
+    async def handle_mcp_jsonrpc(self, request: web.Request) -> web.Response:
+        """Standard MCP JSON-RPC 2.0 endpoint."""
+        try:
+            body = await request.json()
+        except Exception:
+            return web.json_response({"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": "Parse error"}}, status=400)
+
+        loop = asyncio.get_running_loop()
+        res = await loop.run_in_executor(None, self.mcp_server.handle_request, body)
+        if res is None:
+            return web.Response(status=204)
+        return web.json_response(res)
+
+    async def handle_mcp_tools(self, request: web.Request) -> web.Response:
+        """List registered MCP tools."""
+        tools = [tool.to_dict() for tool in self.mcp_server._tools.values()]
+        return web.json_response({"tools": tools, "count": len(tools)})
+
+    async def handle_schema_validate(self, request: web.Request) -> web.Response:
+        """Validate JSON data against a provided schema."""
+        try:
+            body = await request.json()
+        except Exception:
+            return web.json_response({"error": "Invalid JSON"}, status=400)
+        data = body.get("data")
+        schema = body.get("schema", {})
+        valid, errors = SchemaValidator.validate(data, schema)
+        return web.json_response({"valid": valid, "errors": errors})
+
+    async def handle_schema_repair(self, request: web.Request) -> web.Response:
+        """Parse and repair malformed JSON strings."""
+        try:
+            body = await request.json()
+        except Exception:
+            return web.json_response({"error": "Invalid JSON"}, status=400)
+        raw_text = body.get("text", "")
+        success, parsed, message = JSONExtractor.parse_and_repair(raw_text)
+        return web.json_response({"success": success, "parsed": parsed, "message": message})
+
     def close(self) -> None:
         self.core.close()
+        self.mcp_server.close()
 
 
 def create_app() -> web.Application:
@@ -306,8 +405,8 @@ def create_app() -> web.Application:
 def run(host: str = "127.0.0.1", port: int = 8000) -> None:
     server = GliaCoreServer()
     print("=" * 70)
-    print("PROJECT: GLIACORE 0.3.0 — ADVANCED MODULAR MICRO-AI COLLECTIVE INTELLIGENCE ECOSYSTEM")
-    print(f"Target Hardware: NVIDIA RTX 2050 (4 GB VRAM) | 16 GB System RAM")
+    print("PROJECT: GLIACORE 0.4.0 — ADVANCED MODULAR MICRO-AI COLLECTIVE INTELLIGENCE ECOSYSTEM")
+    print("Target Hardware: NVIDIA RTX 2050 (4 GB VRAM) | 16 GB System RAM")
     print(f"Server URL: http://{host}:{port}")
     print("Press Ctrl+C to terminate.")
     print("=" * 70)
@@ -317,7 +416,37 @@ def run(host: str = "127.0.0.1", port: int = 8000) -> None:
         server.close()
 
 
-main = run
+def main() -> None:
+    import argparse
+    parser = argparse.ArgumentParser(description="GliaCore 0.4.0 — Edge Micro-AI Collective Intelligence Ecosystem")
+    subparsers = parser.add_subparsers(dest="command", help="Command to execute")
+
+    # Serve command
+    serve_parser = subparsers.add_parser("serve", help="Start the GliaCore Studio web server and API")
+    serve_parser.add_argument("--host", default="127.0.0.1", help="Host address (default: 127.0.0.1)")
+    serve_parser.add_argument("--port", type=int, default=8000, help="Port (default: 8000)")
+
+    # MCP command
+    subparsers.add_parser("mcp", help="Run Model Context Protocol (MCP) server over stdio for Claude Desktop / Cursor")
+
+    # Version command
+    subparsers.add_parser("version", help="Print GliaCore version")
+
+    args, _ = parser.parse_known_args()
+
+    if args.command == "mcp":
+        server = GliaCoreMCPServer()
+        try:
+            server.run_stdio()
+        finally:
+            server.close()
+    elif args.command == "version":
+        from gliacore import __version__
+        print(f"GliaCore v{__version__}")
+    else:
+        host = getattr(args, "host", "127.0.0.1")
+        port = getattr(args, "port", 8000)
+        run(host=host, port=port)
 
 if __name__ == "__main__":
     main()

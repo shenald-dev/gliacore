@@ -15,7 +15,7 @@ import uuid
 import sqlite3
 import threading
 from typing import Dict, Any, List, Optional
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 
 
 @dataclass

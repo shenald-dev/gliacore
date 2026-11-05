@@ -2,7 +2,6 @@
 Unit tests for Deterministic Tools (MathEngine, ASTParserTool, CodeSandbox)
 """
 
-import pytest
 from gliacore.tools.math_engine import MathEngine
 from gliacore.tools.ast_parser import ASTParserTool
 from gliacore.tools.code_sandbox import CodeSandbox

@@ -3,7 +3,7 @@ Verification & Cross-Neuron Consensus Engine for NEURON
 Detects contradictions, validates artifacts, and assigns confidence calibrations.
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 
 
 class VerificationEngine:

@@ -3,7 +3,7 @@ Mathematical Intelligence & Verification Neuron for NEURON
 Deterministic numerical and symbolic processing via SymPy.
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 import re
 from neuron.neurons.base import BaseNeuron
 from neuron.tools.math_engine import MathEngine

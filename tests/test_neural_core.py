@@ -2,7 +2,6 @@
 Integration tests for Neural Core end-to-end execution
 """
 
-import pytest
 from gliacore.core.engine import NeuralCore
 
 

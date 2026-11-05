@@ -5,9 +5,8 @@ and generates validated optimization proposals.
 """
 
 import time
-import json
 import threading
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from dataclasses import dataclass, field, asdict
 
 

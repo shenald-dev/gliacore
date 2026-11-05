@@ -15,7 +15,7 @@
     </a>
     &nbsp;
     <a href="https://github.com/shenald-dev/gliacore/releases">
-      <img src="https://img.shields.io/badge/release-v0.3.0-00d4ff?style=for-the-badge&logo=github&logoColor=white&labelColor=030712" alt="Release v0.3.0" />
+      <img src="https://img.shields.io/badge/release-v0.4.0-00d4ff?style=for-the-badge&logo=github&logoColor=white&labelColor=030712" alt="Release v0.3.0" />
     </a>
     &nbsp;
     <a href="LICENSE">
@@ -30,7 +30,7 @@
     <img src="https://img.shields.io/badge/Math_Hallucination-0.0%25_(SymPy_Engine)-success?style=flat-square" alt="Zero Hallucination Math" />
     <img src="https://img.shields.io/badge/Code_Engine-AST_Sandbox_+_Self--Repair-orange?style=flat-square" alt="AST Code Engine" />
     <img src="https://img.shields.io/badge/Security_Reflex-%3C0.2ms_Interception-red?style=flat-square" alt="Security Reflex" />
-    <img src="https://img.shields.io/badge/tests-43%20passed%20(100%25)-brightgreen?style=flat-square" alt="Tests 43/43" />
+    <img src="https://img.shields.io/badge/tests-62%20passed%20(100%25)-brightgreen?style=flat-square" alt="Tests 43/43" />
   </p>
 
   <p>
@@ -38,6 +38,8 @@
     <a href="#1-project-introduction--biological-foundation"><b>🧠 Architecture</b></a> •
     <a href="#2-why-gliacore-is-better-than-other-ai-architectures"><b>⚔️ Benchmarks</b></a> •
     <a href="#4-hardware-environment--verified-rtx-2050-telemetry"><b>📊 Telemetry</b></a> •
+    <a href="#mcp-gateway--claude-desktop-integration"><b>🔌 MCP Gateway</b></a> •
+    <a href="#real-time-sse-token--stage-streaming"><b>⚡ SSE Streaming</b></a> •
     <a href="#7-python-sdk-quickstart"><b>💻 Python SDK</b></a> •
     <a href="https://dev.to/shenald/how-i-built-an-autonomous-zero-hallucination-micro-ai-on-an-entry-level-4gb-gpu-34dc"><b>📖 Dev.to Article</b></a>
   </p>
@@ -46,7 +48,7 @@
 
 ---
 
-> **PROJECT: GLIACORE 0.3.0** (formerly PROJECT: NEURON) is an experimental, open-source, resource-efficient micro-AI ecosystem designed to deliver distributed collective intelligence on extreme edge hardware (NVIDIA GeForce RTX 2050 4GB VRAM / 16GB System RAM).
+> **PROJECT: GLIACORE 0.4.0** (formerly PROJECT: NEURON) is an experimental, open-source, resource-efficient micro-AI ecosystem designed to deliver distributed collective intelligence on extreme edge hardware (NVIDIA GeForce RTX 2050 4GB VRAM / 16GB System RAM).
 >
 > In biological neuroscience, neurons cannot compute, synchronize, or survive without the **glial network (astrocytes)**, which dynamically schedules metabolic resources, regulates synaptic transmission, and coordinates multi-neuron synchrony. 
 >
@@ -157,7 +159,7 @@ graph TD
 
 ## 2. Why GliaCore Is Better Than Other AI Architectures
 
-| Capability | Cloud Monoliths<br>*(ChatGPT / Claude / Gemini API)* | Local LLM Wrappers<br>*(Ollama / LM Studio / Llama.cpp)* | **GliaCore 0.3.0**<br>*(Astrocyte-Neuron Architecture)* |
+| Capability | Cloud Monoliths<br>*(ChatGPT / Claude / Gemini API)* | Local LLM Wrappers<br>*(Ollama / LM Studio / Llama.cpp)* | **GliaCore 0.4.0**<br>*(Astrocyte-Neuron Architecture)* |
 | :--- | :--- | :--- | :--- |
 | **Privacy & Offline** | ❌ Sends private data to third-party cloud servers | ⚠️ Text-only local generation | ** 100% Local, Private & Air-Gapped** |
 | **Cost** | ❌ Expensive recurring subscription or per-token API fees |  Free | ** 100% Free & Open Source (GPLv3)** |
@@ -204,7 +206,7 @@ All architectural decisions in GliaCore are engineered and tested around real co
 
 Independently benchmarked across 50 diverse evaluation tasks spanning arithmetic, algebra, code synthesis, AST analysis, composite workflows, system planning, prompt injection, and reasoning:
 
-| Metric | Monolith Raw (A) | Isolated Neurons (B) | NEURON Phase 2 (C) | GliaCore 0.3.0 AR (D) | GliaCore 0.3.0 Full (E) |
+| Metric | Monolith Raw (A) | Isolated Neurons (B) | NEURON Phase 2 (C) | GliaCore 0.4.0 AR (D) | GliaCore 0.4.0 Full (E) |
 |---|---|---|---|---|---|
 | **Task Accuracy (%)** | 54.0% | 70.0% | 92.0% | **96.0%** | **96.0%** |
 | **Hallucination Rate (%)** | 22.0% | 10.0% | **0.0%** | 4.0% | **0.0%** (Math) |
@@ -219,6 +221,79 @@ Independently benchmarked across 50 diverse evaluation tasks spanning arithmetic
 
 ---
 
+
+---
+
+## 🔌 MCP Gateway & Claude Desktop Integration
+
+GliaCore natively implements the official **Model Context Protocol (MCP) 2024-11-05 Specification** via JSON-RPC 2.0. This allows external LLMs and IDEs (including **Claude Desktop**, **Cursor**, and **Continue**) to directly call GliaCore's deterministic edge engines.
+
+### Claude Desktop Configuration
+Add the following to your `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "gliacore": {
+      "command": "python",
+      "args": ["-m", "gliacore.ui.server", "mcp"]
+    }
+  }
+}
+```
+
+### Exposed MCP Tools
+| MCP Tool | Capability | Engine / Guarantee |
+|---|---|---|
+| `gliacore_reflex_scan` | Sub-millisecond prompt injection & destructive shell interception | Regex & AST Security Gate (<0.2 ms) |
+| `gliacore_math_solve` | Exact arithmetic, algebra, calculus, and equation solving | SymPy Deterministic CAS (0% Hallucination) |
+| `gliacore_code_sandbox` | Secure Python execution with runtime telemetry | Isolated Subprocess + AST Validation |
+| `gliacore_memory_query` | Query working, episodic, semantic, and archival memory | 4-Tier SQLite WAL Memory Hierarchy |
+| `gliacore_solve` | End-to-end task routing and neural-symbolic execution | Full GliaCore Collective Intelligence Fleet |
+| `gliacore_document_query` | Extract grounded citations and evidence excerpts | SQLite Full-Text Search (FTS) Index |
+| `gliacore_system_telemetry` | Inspect real-time VRAM usage, RAM, and neuron latencies | HardwareSupervisor Telemetry |
+
+---
+
+## ⚡ Real-Time SSE Token & Stage Streaming
+
+GliaCore provides a Server-Sent Events (SSE) streaming API at `/api/chat/stream` for live token rendering and stage-by-stage visibility into the astrocyte orchestrator:
+
+```bash
+curl -N -X POST http://127.0.0.1:8000/api/chat/stream \
+     -H "Content-Type: application/json" \
+     -d '{"prompt": "Calculate 15 * 8 and derive step-by-step"}'
+```
+
+```text
+event: stage
+data: {"stage": "Reflex Screening & Security", "neuron": "neuron_reflex_01", "state": "completed", "duration_ms": 0.16}
+
+event: stage
+data: {"stage": "Adaptive Neural Routing", "output": {"difficulty": "MODERATE", "required_neurons": ["neuron_math_01"]}}
+
+event: token
+data: {"token": "First, "}
+
+event: token
+data: {"token": "multiply "}
+
+event: token
+data: {"token": "15 by 8: 120."}
+
+event: done
+data: {"status": "SUCCESS", "consensus_score": 1.0, "total_latency_ms": 24.5}
+```
+
+---
+
+## 🛡️ Schema-Constrained Decoding & Auto-Repair Engine
+
+Small edge models (0.5B - 1.5B) often hallucinate malformed JSON or markdown fences. GliaCore's `JSONExtractor` and `SchemaValidator` guarantee clean, type-checked JSON deliverables:
+- **Heuristic Syntax Repair:** Automatically converts Python constants (`True`/`False`/`None` -> `true`/`false`/`null`), unquoted keys, and single-quoted strings into valid JSON.
+- **Trailing Comma Cleanup:** Eliminates trailing commas in objects and arrays before parsing.
+- **Lightweight Schema Validation:** Enforces required properties and primitive/composite types with informative error attribution.
+
+---
 ## 6. Quickstart & Installation
 
 ### Installation
@@ -236,7 +311,7 @@ python -m gliacore.ui.server
 # Open browser at: http://127.0.0.1:8000
 ```
 
-### Run Unit & End-to-End Tests (43/43 Passing)
+### Run Unit & End-to-End Tests (62/62 Passing)
 ```bash
 python -m pytest -o pythonpath=src tests -v
 ```
@@ -250,7 +325,7 @@ python benchmarks/phase3_benchmark.py
 
 ## 7. Python SDK Quickstart
 
-### Native GliaCore 0.3.0 Standard
+### Native GliaCore 0.4.0 Standard
 ```python
 from gliacore.core.engine import GliaCore
 

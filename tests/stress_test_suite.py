@@ -12,9 +12,7 @@ import sys
 import os
 import time
 import json
-import sqlite3
 import tempfile
-import threading
 import concurrent.futures
 from pathlib import Path
 from typing import Dict, Any, List
@@ -26,7 +24,7 @@ import torch
 import psutil
 from gliacore.core.engine import NeuralCore
 from gliacore.core.hardware import HardwareSupervisor
-from gliacore.synapse.messages import SynapseMessage, MessageType
+from gliacore.synapse.messages import SynapseMessage
 from gliacore.synapse.bus import SynapseBus
 from gliacore.neurons.base import BaseNeuron
 
@@ -66,7 +64,7 @@ def run_workload_stress(batch_sizes: List[int] = [1, 10, 50, 100, 500]) -> Dict[
                 res = core.process(p, task_id=f"stress_{size}_{i}")
                 if res.get("status") not in ["SUCCESS", "VERIFICATION_WARNING", "BLOCKED"]:
                     errors += 1
-            except Exception as e:
+            except Exception:
                 errors += 1
             latencies.append((time.perf_counter() - t0) * 1000)
 
@@ -177,7 +175,7 @@ def run_memory_stress() -> Dict[str, Any]:
     }
 
     test_allocations_mb = [100.0, 500.0, 1000.0, 2000.0, 3000.0, 4500.0]
-    print(f"Testing dynamic allocation feasibility against 500MB safety buffer...")
+    print("Testing dynamic allocation feasibility against 500MB safety buffer...")
     for alloc_mb in test_allocations_mb:
         feasible = supervisor.can_allocate_vram(alloc_mb)
         results["allocation_boundary_tests"].append({
@@ -251,7 +249,7 @@ def run_fault_injection() -> Dict[str, Any]:
         bus.publish(msg)
         recv = bus.receive("phantom_neuron_999")
         fault3_handled = (recv is None)
-    except Exception as e:
+    except Exception:
         fault3_handled = False
     results["unregistered_mailbox"] = {"handled": fault3_handled}
     print(f"   Status: {'PROTECTED' if fault3_handled else 'VULNERABLE'} (Dropped gracefully without bus crash)")

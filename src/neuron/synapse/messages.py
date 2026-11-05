@@ -7,7 +7,7 @@ import time
 import uuid
 import msgpack
 from enum import Enum
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from dataclasses import dataclass, field, asdict
 
 

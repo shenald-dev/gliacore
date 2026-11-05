@@ -8,7 +8,7 @@ import queue
 import threading
 from collections import defaultdict, deque
 from typing import Dict, List, Callable, Optional, Any
-from gliacore.synapse.messages import SynapseMessage, MessageType
+from gliacore.synapse.messages import SynapseMessage
 
 
 class SynapseBus:
@@ -77,7 +77,7 @@ class SynapseBus:
         for callback in topic_callbacks:
             try:
                 callback(unpacked_msg)
-            except Exception as e:
+            except Exception:
                 pass
 
         # 3. Wildcard listeners
