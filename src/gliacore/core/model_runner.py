@@ -1,5 +1,5 @@
 """
-Foundation Model Runner & Inference Manager for PROJECT: NEURON
+Foundation Model Runner & Inference Manager for PROJECT: GLIACORE / NEURON
 Manages Qwen2.5 local model inference, quantization, context windows, and VRAM containment.
 """
 
@@ -37,13 +37,13 @@ class ModelRunner:
         "qwen-0.5b": {
             "name": "Qwen2.5-0.5B-Instruct",
             "repo_id": "Qwen/Qwen2.5-0.5B-Instruct",
-            "vram_required_mb": 650.0,
+            "vram_required_mb": 950.0,
             "default_context": 2048
         },
         "qwen-1.5b": {
             "name": "Qwen2.5-1.5B-Instruct",
             "repo_id": "Qwen/Qwen2.5-1.5B-Instruct",
-            "vram_required_mb": 1450.0,
+            "vram_required_mb": 1850.0,
             "default_context": 2048
         }
     }
@@ -55,7 +55,7 @@ class ModelRunner:
         self.current_model_key: Optional[str] = None
         self.status: str = "UNLOADED"
         self.device: str = "cuda:0" if self.supervisor.cuda_available else "cpu"
-        self.quantization: str = "4bit" if self.supervisor.cuda_available else "float32"
+        self.quantization: str = "float16" if self.supervisor.cuda_available else "float32"
         self.context_length: int = 2048
         self.error_message: Optional[str] = None
 
@@ -101,42 +101,65 @@ class ModelRunner:
             target_device = "cpu" if force_cpu or not self.supervisor.cuda_available else "cuda:0"
             if target_device == "cuda:0":
                 if not self.supervisor.can_allocate_vram(vram_needed):
-                    # Graceful degradation to CPU
                     target_device = "cpu"
                     print(f"[ModelRunner] VRAM tight for {vram_needed}MB. Gracefully falling back to CPU.")
+
+            # If already loaded on target device with real weights, reuse immediately
+            if (self.current_model_key == model_key and
+                self.device == target_device and
+                self.model is not None and
+                self.is_real_weights):
+                return {
+                    "success": True,
+                    "status": "ALREADY_LOADED",
+                    "device": self.device,
+                    "is_real_weights": True
+                }
+
+            # Unload any prior model to ensure clean slate
+            if self.model is not None:
+                self.model = None
+                self.tokenizer = None
+                self.supervisor.purge_cache()
 
             self.status = "LOADING"
             self.device = target_device
             self.current_model_key = model_key
+            self.quantization = "float16" if target_device == "cuda:0" else "float32"
 
             try:
-                # Attempt to load using transformers if available locally
                 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-                print(f"[ModelRunner] Attempting to load {meta['repo_id']} onto {target_device}...")
+                print(f"[ModelRunner] Loading {meta['repo_id']} onto {target_device}...")
                 try:
-                    self.tokenizer = AutoTokenizer.from_pretrained(meta["repo_id"], trust_remote_code=True, local_files_only=True)
+                    self.tokenizer = AutoTokenizer.from_pretrained(
+                        meta["repo_id"],
+                        trust_remote_code=True,
+                        local_files_only=True
+                    )
                 except Exception:
                     raise FileNotFoundError(f"Model weights for {meta['repo_id']} are not present in local cache.")
-                
+
                 load_kwargs = {"trust_remote_code": True, "local_files_only": True}
                 if target_device == "cuda:0":
-                    load_kwargs["torch_dtype"] = torch.float16
-                    load_kwargs["device_map"] = "auto"
+                    load_kwargs["dtype"] = torch.float16
+                    load_kwargs["device_map"] = "cuda:0"
                 else:
-                    load_kwargs["torch_dtype"] = torch.float32
+                    load_kwargs["dtype"] = torch.float32
+                    load_kwargs["device_map"] = "cpu"
 
                 self.model = AutoModelForCausalLM.from_pretrained(meta["repo_id"], **load_kwargs)
                 self.is_real_weights = True
                 self.status = "LOADED"
                 self.error_message = None
+                print(f"[ModelRunner] Successfully loaded {meta['name']} onto {self.device}!")
                 return {"success": True, "status": "LOADED", "device": self.device, "is_real_weights": True}
 
             except Exception as e:
-                # Weights are not locally cached or internet download prohibited without approval
                 self.is_real_weights = False
                 self.status = "STANDBY"
-                self.error_message = f"Model weights not present locally: {str(e)[:120]}. Operating in high-performance neural-symbolic mode."
+                err_str = str(e)[:120]
+                self.error_message = f"Model weights not present locally: {err_str}. Operating in high-performance neural-symbolic mode."
                 print(f"[ModelRunner] {self.error_message}")
                 return {
                     "success": True,
@@ -167,19 +190,42 @@ class ModelRunner:
         with self.lock:
             if self.is_real_weights and self.model is not None and self.tokenizer is not None:
                 try:
-                    inputs = self.tokenizer(prompt, return_tensors="pt")
-                    if self.device.startswith("cuda"):
-                        inputs = {k: v.to(self.device) for k, v in inputs.items()}
+                    system_prompt = (
+                        "You are GliaCore (formerly PROJECT: NEURON), an edge-optimized AI assistant running "
+                        "locally on the user's hardware with NVIDIA GPU acceleration. Provide clear, direct, "
+                        "concise, and helpful answers."
+                    )
+                    messages = [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": prompt}
+                    ]
+
+                    if hasattr(self.tokenizer, "apply_chat_template"):
+                        formatted_prompt = self.tokenizer.apply_chat_template(
+                            messages,
+                            tokenize=False,
+                            add_generation_prompt=True
+                        )
+                    else:
+                        formatted_prompt = prompt
+
+                    inputs = self.tokenizer(formatted_prompt, return_tensors="pt")
+                    model_device = getattr(self.model, "device", self.device)
+                    inputs = {k: v.to(model_device) for k, v in inputs.items()}
 
                     with torch.no_grad():
                         outputs = self.model.generate(
                             **inputs,
                             max_new_tokens=max_new_tokens,
+                            do_sample=True,
+                            temperature=0.7,
+                            top_p=0.9,
                             pad_token_id=self.tokenizer.eos_token_id
                         )
 
-                    gen_tokens = outputs[0][inputs["input_ids"].shape[1]:]
-                    generated_text = self.tokenizer.decode(gen_tokens, skip_special_tokens=True)
+                    input_len = inputs["input_ids"].shape[1]
+                    gen_tokens = outputs[0][input_len:]
+                    generated_text = self.tokenizer.decode(gen_tokens, skip_special_tokens=True).strip()
                     elapsed = time.perf_counter() - start
                     token_count = len(gen_tokens)
 
@@ -235,7 +281,7 @@ class ModelRunner:
                 "### [Intelligence] GliaCore 0.3.0 Ecosystem\n\n"
                 "I am **GliaCore**, an open-source, edge-optimized collective intelligence ecosystem designed to run distributed intelligence on consumer edge hardware with 4 GB VRAM.\n\n"
                 "#### Core Subsystems & Capabilities:\n"
-                "1. **Reflex & Security Neuron (`ReflexNeuron`):** Sub-millisecond regex & AST gateway blocking prompt injections and destructive commands (`rm -rf`, fork bombs, shell escapes) in $<0.2$ ms.\n"
+                "1. **Reflex & Security Neuron (`ReflexNeuron`):** Sub-millisecond regex & AST gateway blocking prompt injections and destructive commands (`rm -rf`, fork bombs, shell escapes) in <0.2 ms.\n"
                 "2. **Mathematical Intelligence (`MathVerifierNeuron`):** Exact arithmetic evaluation and algebraic equation solving via SymPy (0% hallucination).\n"
                 "3. **Code Synthesis & Verification (`CoderNeuron`):** Python synthesis with AST structural parsing and a 5.0s isolated subprocess sandbox.\n"
                 "4. **Adaptive Neural Router (`AdaptiveRouter`):** Dynamic complexity scoring (`SIMPLE`, `MODERATE`, `COMPLEX`) routing tasks into optimal execution workflows.\n"
@@ -253,7 +299,7 @@ class ModelRunner:
                 "#### How GliaCore Implements This:\n"
                 "- **Neurons:** Small, specialized computational units. Each neuron specializes in a single intelligence domain (Math, Code, Reflex, Planning).\n"
                 "- **Synapses:** High-speed binary communication channels serializing data with typed MessagePack packets rather than heavy JSON-over-HTTP.\n"
-                "- **GliaCore Engine (Astrocyte):** The central orchestrator that monitors VRAM headroom (enforcing a $\le 3,500$ MB ceiling on the RTX 2050), schedules execution DAGs, and consolidates memory across sessions.\n"
+                "- **GliaCore Engine (Astrocyte):** The central orchestrator that monitors VRAM headroom (enforcing a <= 3,500 MB ceiling on the RTX 2050), schedules execution DAGs, and consolidates memory across sessions.\n"
                 "- **Deterministic Offloading:** Rather than asking a language model to guess arithmetic, math is routed to SymPy and syntax to Python's AST parser, achieving 100% precision on edge hardware."
             )
 

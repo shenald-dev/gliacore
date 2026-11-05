@@ -46,7 +46,7 @@ class NeuralCore:
     autonomous agent planning, and self-improving execution.
     """
 
-    def __init__(self, db_path: str = "neuron_store.db", memory_db_path: str = "neuron_memory.db"):
+    def __init__(self, db_path: str = "neuron_store.db", memory_db_path: str = "neuron_memory.db", auto_load_model: bool = False):
         self.hardware = HardwareSupervisor()
         self.synapse_bus = SynapseBus()
         self.registry = NeuronRegistry()
@@ -54,6 +54,11 @@ class NeuralCore:
         self.memory = MemoryHierarchy(db_path=memory_db_path)
         self.verifier = VerificationEngine()
         self.model_runner = ModelRunner(hardware_supervisor=self.hardware)
+        if auto_load_model and os.environ.get("GLIACORE_NO_AUTOLOAD") != "1" and os.environ.get("NEURON_NO_AUTOLOAD") != "1":
+            try:
+                self.model_runner.load_model("qwen-0.5b")
+            except Exception:
+                pass
 
         # Advanced Phase 3 Subsystems
         self.router = AdaptiveRouter()

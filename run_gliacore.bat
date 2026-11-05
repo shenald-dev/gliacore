@@ -31,7 +31,7 @@ echo [*] Press Ctrl+C in this terminal window to stop the server anytime.
 echo.
 
 :: Automatically open browser after 2 seconds in the background
-start "" /b cmd /c "timeout /t 2 /nobreak >nul && start http://127.0.0.1:8000"
+start "" /b cmd /c "timeout /t 5 /nobreak >nul && start http://127.0.0.1:8000"
 
 :: Start the GliaCore Studio Server
 python -m gliacore.ui.server

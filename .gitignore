@@ -40,6 +40,9 @@ models/
 .coverage
 htmlcov/
 .ruff_cache/
+scratch/
+*.db-shm
+*.db-wal
 
 # IDE & OS
 .vscode/

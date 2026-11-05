@@ -19,10 +19,18 @@ STATIC_DIR = Path(__file__).parent / "static"
 
 
 class NeuronServer:
-    def __init__(self, db_path: str = "neuron_store.db", memory_db_path: str = "neuron_memory.db"):
+    def __init__(self, db_path: str = "neuron_store.db", memory_db_path: str = "neuron_memory.db", auto_load_model: bool = True):
         self.core = NeuralCore(db_path=db_path, memory_db_path=memory_db_path)
         self.app = web.Application()
         self._setup_routes()
+
+        if auto_load_model and os.environ.get("GLIACORE_NO_AUTOLOAD") != "1" and os.environ.get("NEURON_NO_AUTOLOAD") != "1":
+            try:
+                res = self.core.model_runner.load_model("qwen-0.5b")
+                if res.get("is_real_weights"):
+                    print(f"[*] Local SLM active on {self.core.model_runner.device}: {self.core.model_runner.SUPPORTED_MODELS['qwen-0.5b']['name']}")
+            except Exception as e:
+                print(f"[*] Standby mode: {e}")
 
     def _setup_routes(self) -> None:
         self.app.router.add_get("/", self.handle_index)
