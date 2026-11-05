@@ -1,0 +1,51 @@
+{
+  "A1_monolith_raw": {
+    "success_count": 27,
+    "accuracy_pct": 54.0,
+    "hallucination_pct": 22.0,
+    "failure_rate_pct": 46.0,
+    "mean_latency_ms": 3.56,
+    "median_latency_ms": 1.58,
+    "p95_latency_ms": 2.87,
+    "p99_latency_ms": 92.55,
+    "peak_vram_mb": 150.0,
+    "peak_ram_mb": 116.85000000000036
+  },
+  "A2_monolith_tools": {
+    "success_count": 38,
+    "accuracy_pct": 76.0,
+    "hallucination_pct": 0.0,
+    "failure_rate_pct": 24.0,
+    "mean_latency_ms": 1.88,
+    "median_latency_ms": 1.62,
+    "p95_latency_ms": 2.83,
+    "p99_latency_ms": 7.24,
+    "peak_vram_mb": 150.0,
+    "peak_ram_mb": 0.06000000000040018
+  },
+  "B_isolated": {
+    "success_count": 35,
+    "accuracy_pct": 70.0,
+    "hallucination_pct": 10.0,
+    "failure_rate_pct": 30.0,
+    "mean_latency_ms": 1.48,
+    "median_latency_ms": 0.28,
+    "p95_latency_ms": 3.6,
+    "p99_latency_ms": 48.03,
+    "peak_vram_mb": 26.0,
+    "peak_ram_mb": 5.1599999999998545
+  },
+  "C_neuron_network": {
+    "success_count": 48,
+    "accuracy_pct": 96.0,
+    "hallucination_pct": 4.0,
+    "failure_rate_pct": 4.0,
+    "mean_latency_ms": 95.06,
+    "median_latency_ms": 70.69,
+    "p95_latency_ms": 145.14,
+    "p99_latency_ms": 195.96,
+    "mean_consensus_score": 0.68,
+    "peak_vram_mb": 26.0,
+    "peak_ram_mb": 0.0
+  }
+}
