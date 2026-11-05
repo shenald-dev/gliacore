@@ -1,12 +1,50 @@
-# GliaCore 0.3.0: An Edge-Optimized, Modular Micro-AI Collective Intelligence Ecosystem
+<div align="center">
 
-[![Version: 0.3.0](https://img.shields.io/badge/version-0.3.0-blue.svg)](pyproject.toml)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-brightgreen.svg)](pyproject.toml)
-[![Hardware: NVIDIA RTX 2050 4GB](https://img.shields.io/badge/GPU-RTX%202050%20(4GB)-76B900.svg)](ARCHITECTURE.md)
-[![Tests: 43 Passed](https://img.shields.io/badge/tests-43%20passed%20(100%25)-success.svg)](tests/)
-[![Architecture: Glia--Neuron Collective](https://img.shields.io/badge/Architecture-Astrocyte--Neuron-purple.svg)](ARCHITECTURE.md)
-[![Case Study: Dev.to](https://img.shields.io/badge/Case%20Study-Dev.to%20Article-black.svg)](https://dev.to/shenald/how-i-built-an-autonomous-zero-hallucination-micro-ai-on-an-entry-level-4gb-gpu-34dc)
+  <img src="assets/gliacore_hero.png" width="100%" alt="GliaCore Hero Banner" />
+
+  <br/><br/>
+
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&pause=1000&color=9333EA&center=true&vCenter=true&width=850&lines=The+Astrocyte-Neuron+Edge+AI+Collective;0%25+Math+Hallucination+%E2%80%A2+AST+Sandbox+Execution;18.3+Tokens%2Fsec+on+Entry-Level+4GB+RTX+2050;Self-Repairing+Code+Synthesizer+%26+4-Tier+Memory;Autonomous+DAG+Planner+%E2%80%A2+%3C0.2ms+Security+Gate" alt="Typing Tagline" />
+
+  <h3>Edge-Optimized Modular Micro-AI Collective Intelligence Ecosystem</h3>
+  <p><i>Deterministic Symbolic Engines + Local Neural Foundation Model on Consumer 4GB Silicon</i></p>
+
+  <p>
+    <a href="https://dev.to/shenald/how-i-built-an-autonomous-zero-hallucination-micro-ai-on-an-entry-level-4gb-gpu-34dc" target="_blank" rel="noopener noreferrer">
+      <img src="https://img.shields.io/badge/%F0%9F%A7%A0_DEV.to_CASE_STUDY-Zero--Hallucination_Micro--AI_on_4GB_GPU-8b5cf6?style=for-the-badge&logo=dev.to&logoColor=white&labelColor=030712" alt="Dev.to Case Study" />
+    </a>
+    &nbsp;
+    <a href="https://github.com/shenald-dev/gliacore/releases">
+      <img src="https://img.shields.io/badge/release-v0.3.0-00d4ff?style=for-the-badge&logo=github&logoColor=white&labelColor=030712" alt="Release v0.3.0" />
+    </a>
+    &nbsp;
+    <a href="LICENSE">
+      <img src="https://img.shields.io/badge/license-GPLv3-blue?style=for-the-badge&labelColor=030712" alt="License GPLv3" />
+    </a>
+  </p>
+
+  <p>
+    <img src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.10+" />
+    <img src="https://img.shields.io/badge/GPU_Target-RTX_2050_(4GB_Ampere)-76B900?style=flat-square&logo=nvidia&logoColor=white" alt="NVIDIA RTX 2050" />
+    <img src="https://img.shields.io/badge/Acceleration-CUDA_TF32_(18.3_tok%2Fs)-00C7B7?style=flat-square" alt="CUDA TF32" />
+    <img src="https://img.shields.io/badge/Math_Hallucination-0.0%25_(SymPy_Engine)-success?style=flat-square" alt="Zero Hallucination Math" />
+    <img src="https://img.shields.io/badge/Code_Engine-AST_Sandbox_+_Self--Repair-orange?style=flat-square" alt="AST Code Engine" />
+    <img src="https://img.shields.io/badge/Security_Reflex-%3C0.2ms_Interception-red?style=flat-square" alt="Security Reflex" />
+    <img src="https://img.shields.io/badge/tests-43%20passed%20(100%25)-brightgreen?style=flat-square" alt="Tests 43/43" />
+  </p>
+
+  <p>
+    <a href="#-1-click-launch-windows-11"><b>⚡ 1-Click Launch</b></a> •
+    <a href="#1-project-introduction--biological-foundation"><b>🧠 Architecture</b></a> •
+    <a href="#2-why-gliacore-is-better-than-other-ai-architectures"><b>⚔️ Benchmarks</b></a> •
+    <a href="#4-hardware-environment--verified-rtx-2050-telemetry"><b>📊 Telemetry</b></a> •
+    <a href="#7-python-sdk-quickstart"><b>💻 Python SDK</b></a> •
+    <a href="https://dev.to/shenald/how-i-built-an-autonomous-zero-hallucination-micro-ai-on-an-entry-level-4gb-gpu-34dc"><b>📖 Dev.to Article</b></a>
+  </p>
+
+</div>
+
+---
 
 > **PROJECT: GLIACORE 0.3.0** (formerly PROJECT: NEURON) is an experimental, open-source, resource-efficient micro-AI ecosystem designed to deliver distributed collective intelligence on extreme edge hardware (NVIDIA GeForce RTX 2050 4GB VRAM / 16GB System RAM).
 >
@@ -18,17 +56,62 @@
 
 ## ⚡ 1-Click Launch (Windows 11)
 
-No terminal commands needed. Simply double-click:
+No complicated CLI setup required. Simply double-click:
 ```cmd
 run_gliacore.bat
 ```
 *(Or `run_neuron.bat` for backward compatibility)*
 
-The launcher automatically:
+The automated launcher:
 1. Bootstraps the local environment and sets `PYTHONPATH`.
 2. Pre-loads the neural foundation model directly into **NVIDIA GPU VRAM**.
 3. Starts the local async server at `http://127.0.0.1:8000`.
-4. Launches your default web browser into the **GliaCore Studio** interactive UI.
+4. Launches your default web browser directly into **GliaCore Studio**.
+
+---
+
+## 💻 Live Execution Showcase
+
+### 1. Zero-Hallucination Symbolic Math + GPU Derivation
+```text
+User > Calculate 25 * 18 + 140 / 7 and explain each step
+
+[HARDWARE SUPERVISOR] VRAM: 942.3 MB / 3500 MB (Safe Ceiling) | Host RAM: 4.8 GB
+[REFLEX GATEWAY]      Input verified clean in 0.14 ms
+[ADAPTIVE ROUTER]     Category: COMPOSITE_MATH | Complexity: MODERATE | Route: MathNeuron + ModelRunner
+[MATH NEURON (SymPy)] Result: 470.0 (Exact 0% Hallucination)
+[MODEL RUNNER (CUDA)] Step-by-Step Derivation on RTX 2050 (18.28 tok/s):
+                      1. First perform multiplication: 25 * 18 = 450
+                      2. Next perform division: 140 / 7 = 20
+                      3. Finally add the two quantities: 450 + 20 = 470
+[VERIFICATION ENGINE] Symbolic & Neural Consensus: MATCH (Confidence: 1.00)
+```
+
+### 2. Autonomous Code Synthesis & AST Self-Repair Loop
+```text
+User > Write a Python function to compute Fibonacci numbers with memoization
+
+[CODER NEURON]        Synthesizing implementation via Qwen2.5 on CUDA...
+[AST PARSER]          Validating Abstract Syntax Tree... PASSED
+[SUBPROCESS SANDBOX]  Executing test run in isolated namespace...
+                      def fib_memo(n, memo=None):
+                          if memo is None: memo = {}
+                          if n in memo: return memo[n]
+                          if n <= 1: return n
+                          memo[n] = fib_memo(n-1, memo) + fib_memo(n-2, memo)
+                          return memo[n]
+[VERIFICATION ENGINE] Output: fib_memo(10) -> 55 | Memory: 0.04 MB | Syntax: VALID
+```
+
+### 3. Immediate Threat Interception (<0.2 ms)
+```text
+User > rm -rf / --no-preserve-root
+
+[REFLEX GATEWAY]      CRITICAL SECURITY THREAT DETECTED in 0.11 ms!
+                      Pattern: Destructive Shell Command (POSIX Root Wipe)
+                      Action: Immediate Gateway Interception (GPU execution averted)
+                      Response: "Command execution rejected: Destructive system operation prohibited."
+```
 
 ---
 

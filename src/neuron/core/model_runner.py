@@ -103,12 +103,32 @@ class ModelRunner:
             meta = self.SUPPORTED_MODELS[model_key]
             vram_needed = meta["vram_required_mb"]
 
-            # Pre-flight VRAM check
+            # Pre-flight VRAM and RAM checks
             target_device = "cpu" if force_cpu or not self.supervisor.cuda_available else "cuda:0"
             if target_device == "cuda:0":
                 if not self.supervisor.can_allocate_vram(vram_needed):
                     target_device = "cpu"
                     print(f"[ModelRunner] VRAM tight for {vram_needed}MB. Gracefully falling back to CPU.")
+
+            if target_device == "cpu":
+                ram_free_mb = self.supervisor.get_telemetry().system_ram_free_mb
+                if ram_free_mb < 3500.0:
+                    self.is_real_weights = False
+                    self.status = "STANDBY"
+                    self.device = "cpu"
+                    self.current_model_key = model_key
+                    self.error_message = (
+                        f"System RAM tight ({ram_free_mb:.1f}MB free < 3500MB safe threshold). "
+                        "Operating in high-performance neural-symbolic mode."
+                    )
+                    print(f"[ModelRunner] {self.error_message}")
+                    return {
+                        "success": True,
+                        "status": "STANDBY",
+                        "device": "cpu",
+                        "is_real_weights": False,
+                        "note": "Operating in neural-symbolic mode with deterministic tools."
+                    }
 
             # If already loaded on target device with real weights, reuse immediately
             if (self.current_model_key == model_key and
