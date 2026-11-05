@@ -4,7 +4,6 @@ Tests candidate evaluation, contradiction detection, ground-truth alignment, and
 """
 
 from gliacore.verification.swarm import SwarmConsensusEngine
-from neuron.verification.swarm import SwarmConsensusEngine as LegacySwarmConsensusEngine
 
 
 def test_swarm_consensus_empty():
@@ -75,5 +74,9 @@ def test_swarm_consensus_code_syntax():
 
 def test_legacy_neuron_swarm_compatibility():
     """Verify backward compatibility of neuron.verification.swarm."""
+    import warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning)
+        from neuron.verification.swarm import SwarmConsensusEngine as LegacySwarmConsensusEngine
     res = LegacySwarmConsensusEngine.evaluate_candidates([])
     assert res.best_candidate is None

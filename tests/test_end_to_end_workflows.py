@@ -55,7 +55,8 @@ def test_e2e_model_lifecycle(tmp_path):
     async def _test():
         server = GliaCoreServer(
             db_path=str(tmp_path / "store.db"),
-            memory_db_path=str(tmp_path / "mem.db")
+            memory_db_path=str(tmp_path / "mem.db"),
+            auto_load_model=False
         )
         client = TestClient(TestServer(server.app))
         await client.start_server()
@@ -67,7 +68,7 @@ def test_e2e_model_lifecycle(tmp_path):
             assert "current_model" in info
 
             # Load model
-            load_resp = await client.post("/api/model/load", json={"model": "qwen-0.5b", "force_cpu": True})
+            load_resp = await client.post("/api/model/load", json={"model": "qwen-0.5b"})
             assert load_resp.status == 200
             load_data = await load_resp.json()
             assert load_data.get("status") in ["LOADED", "STANDBY", "ALREADY_LOADED", "MOCK_LOADED"]

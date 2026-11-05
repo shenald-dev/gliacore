@@ -7,7 +7,6 @@ client interactions, and legacy backward-compatibility layer.
 from gliacore.mcp.protocol import LATEST_PROTOCOL_VERSION
 from gliacore.mcp.server import GliaCoreMCPServer
 from gliacore.mcp.client import GliaCoreMCPClient
-from neuron.mcp import NeuronMCPServer, NeuronMCPClient
 
 
 def test_mcp_initialize_handshake():
@@ -211,8 +210,12 @@ def test_mcp_client_roundtrip():
 
 def test_neuron_legacy_mcp_compatibility():
     """Verify legacy 'from neuron.mcp import NeuronMCPServer' backwards compatibility."""
-    server = NeuronMCPServer()
-    client = NeuronMCPClient(server=server)
+    import warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning)
+        from neuron.mcp import NeuronMCPServer, NeuronMCPClient
+        server = NeuronMCPServer()
+        client = NeuronMCPClient(server=server)
     try:
         assert client.ping() is True
         tools = client.list_tools()

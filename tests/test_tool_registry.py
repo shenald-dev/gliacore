@@ -6,7 +6,6 @@ parameter validation, and execution sandboxing.
 
 from gliacore.tools.registry import ToolRegistry, generate_schema_from_callable
 from gliacore.core.engine import GliaCore
-from neuron.tools.registry import ToolRegistry as LegacyToolRegistry
 
 
 def test_schema_generation_from_callable():
@@ -86,5 +85,9 @@ def test_gliacore_engine_tool_integration():
 
 def test_legacy_neuron_tool_registry_compatibility():
     """Verify backward compatibility of neuron.tools.registry."""
+    import warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning)
+        from neuron.tools.registry import ToolRegistry as LegacyToolRegistry
     registry = LegacyToolRegistry()
     assert registry.get_tool("datetime_now") is not None
