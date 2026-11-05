@@ -6,7 +6,7 @@
 [![Hardware: NVIDIA RTX 2050 4GB](https://img.shields.io/badge/GPU-RTX%202050%20(4GB)-76B900.svg)](ARCHITECTURE.md)
 [![Tests: 43 Passed](https://img.shields.io/badge/tests-43%20passed%20(100%25)-success.svg)](tests/)
 [![Architecture: Glia--Neuron Collective](https://img.shields.io/badge/Architecture-Astrocyte--Neuron-purple.svg)](ARCHITECTURE.md)
-[![Case Study: Dev.to](https://img.shields.io/badge/Case%20Study-Dev.to%20Article-black.svg)](DEVTO_CASE_STUDY.md)
+[![Case Study: Dev.to](https://img.shields.io/badge/Case%20Study-Dev.to%20Article-black.svg)](https://dev.to/shenald/how-i-built-an-autonomous-zero-hallucination-micro-ai-on-an-entry-level-4gb-gpu-34dc)
 
 > **PROJECT: GLIACORE 0.3.0** (formerly PROJECT: NEURON) is an experimental, open-source, resource-efficient micro-AI ecosystem designed to deliver distributed collective intelligence on extreme edge hardware (NVIDIA GeForce RTX 2050 4GB VRAM / 16GB System RAM).
 >
@@ -218,7 +218,7 @@ GliaCore Studio provides an intuitive, high-performance web dashboard at `http:/
 
 ## 9. Technical Documentation Directory
 
-- [`DEVTO_CASE_STUDY.md`](DEVTO_CASE_STUDY.md): **Deep-dive Dev.to publication case study** on building a 4GB edge AI ecosystem.
+- [`DEVTO_CASE_STUDY.md`](https://dev.to/shenald/how-i-built-an-autonomous-zero-hallucination-micro-ai-on-an-entry-level-4gb-gpu-34dc): **Deep-dive Dev.to publication case study** on building a 4GB edge AI ecosystem.
 - [`BRAND_RESEARCH.md`](BRAND_RESEARCH.md): Full naming study, namespace collisions, weighted ranking, and selection analysis.
 - [`BRAND_IDENTITY.md`](BRAND_IDENTITY.md): Visual identity, Astrocyte Core logo, color palette, and taxonomy conventions.
 - [`MIGRATION_GUIDE.md`](MIGRATION_GUIDE.md): Step-by-step upgrade guide, backward compatibility stubs, and database preservation.

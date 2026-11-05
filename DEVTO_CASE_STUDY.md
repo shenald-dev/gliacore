@@ -3,7 +3,7 @@ title: How I Built an Autonomous, Zero-Hallucination Micro-AI on a 4GB GPU (And 
 published: true
 tags: ai, machinelearning, python, gpu, opensource
 cover_image: https://raw.githubusercontent.com/shenald-dev/gliacore/main/assets/banner.png
-canonical_url: https://github.com/shenald-dev/gliacore
+canonical_url: https://dev.to/shenald/how-i-built-an-autonomous-zero-hallucination-micro-ai-on-an-entry-level-4gb-gpu-34dc
 description: Inside the Astrocyte-Neuron architecture: Combining Ampere CUDA Tensor Cores, SymPy exact math, AST syntax self-repair, and 4-tier persistent SQLite memory on an NVIDIA RTX 2050.
 ---
 
