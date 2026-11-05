@@ -1,0 +1,63 @@
+{
+  "Condition_A_Monolith_Raw": {
+    "success_count": 27,
+    "accuracy_pct": 54.0,
+    "hallucination_pct": 22.0,
+    "failure_rate_pct": 46.0,
+    "mean_latency_ms": 3.77,
+    "median_latency_ms": 1.62,
+    "p95_latency_ms": 2.88,
+    "p99_latency_ms": 100.51,
+    "peak_vram_mb": 150.0,
+    "reflection_repairs": 0
+  },
+  "Condition_B_Isolated_Neurons": {
+    "success_count": 35,
+    "accuracy_pct": 70.0,
+    "hallucination_pct": 10.0,
+    "failure_rate_pct": 30.0,
+    "mean_latency_ms": 1.79,
+    "median_latency_ms": 0.3,
+    "p95_latency_ms": 4.05,
+    "p99_latency_ms": 58.54,
+    "peak_vram_mb": 26.0,
+    "reflection_repairs": 0
+  },
+  "Condition_C_Neuron_Phase2": {
+    "success_count": 46,
+    "accuracy_pct": 92.0,
+    "hallucination_pct": 0.0,
+    "failure_rate_pct": 8.0,
+    "mean_latency_ms": 24.63,
+    "median_latency_ms": 2.36,
+    "p95_latency_ms": 80.93,
+    "p99_latency_ms": 81.57,
+    "peak_vram_mb": 26.0,
+    "reflection_repairs": 0
+  },
+  "Condition_D_Phase3_Adaptive_Reasoning": {
+    "success_count": 48,
+    "accuracy_pct": 96.0,
+    "hallucination_pct": 4.0,
+    "failure_rate_pct": 4.0,
+    "mean_latency_ms": 96.47,
+    "median_latency_ms": 74.91,
+    "p95_latency_ms": 154.58,
+    "p99_latency_ms": 184.01,
+    "peak_vram_mb": 26.0,
+    "reflection_repairs": 0
+  },
+  "Condition_E_Phase3_Full_Ecosystem": {
+    "success_count": 48,
+    "accuracy_pct": 96.0,
+    "hallucination_pct": 4.0,
+    "failure_rate_pct": 4.0,
+    "mean_latency_ms": 102.22,
+    "median_latency_ms": 79.03,
+    "p95_latency_ms": 185.35,
+    "p99_latency_ms": 205.32,
+    "peak_vram_mb": 26.0,
+    "reflection_repairs": 0,
+    "memory_items_accumulated": 46
+  }
+}

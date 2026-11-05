@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "neuron-ai"
-version = "0.1.0"
+version = "0.3.0"
 description = "An Edge-Optimized, Modular Micro-AI Intelligence Ecosystem"
 authors = [
     { name = "Shenal Diluksha", email = "shenal@example.com" }
@@ -30,6 +30,8 @@ dependencies = [
     "peft>=0.10.0",
     "accelerate>=0.28.0",
     "sympy>=1.12.0",
+    "numpy>=1.24.0",
+    "aiohttp>=3.9.0",
     "msgpack>=1.0.8",
     "psutil>=5.9.0",
     "safetensors>=0.4.0",

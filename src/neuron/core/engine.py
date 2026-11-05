@@ -1,10 +1,17 @@
 """
-NEURAL CORE — The Central Orchestrator for PROJECT: NEURON
-Coordinates specialized neurons, manages memory, routes tasks, and executes verification.
+NEURAL CORE 0.3.0 — Advanced Collaborative Intelligence Orchestrator
+Integrates:
+- Adaptive Neural Router (difficulty-aware, confidence-calibrated)
+- Advanced Reasoning Engine (generate-and-verify, reflection, self-repair)
+- 4-Tier Memory Hierarchy (working, episodic, semantic, procedural)
+- Autonomous Multi-Step Agent
+- Extensible Plugin Architecture
+- Self-Improvement Telemetry Loop
 """
 
 import time
 import uuid
+import json
 import psutil
 from typing import Dict, Any, List, Optional
 
@@ -15,6 +22,7 @@ from neuron.synapse.bus import SynapseBus
 from neuron.synapse.messages import SynapseMessage, MessageType
 from neuron.memory.working import WorkingMemory
 from neuron.memory.storage import KnowledgeStorage
+from neuron.memory.hierarchy import MemoryHierarchy
 from neuron.verification.consensus import VerificationEngine
 
 from neuron.neurons.reflex import ReflexNeuron
@@ -22,21 +30,38 @@ from neuron.neurons.planner import PlannerNeuron
 from neuron.neurons.math_verifier import MathVerifierNeuron
 from neuron.neurons.coder import CoderNeuron
 
+from neuron.routing.router import AdaptiveRouter, TaskDifficulty
+from neuron.reasoning.engine import AdvancedReasoningEngine
+from neuron.agent.planner import AutonomousAgent
+from neuron.plugins.base import PluginManager
+from neuron.plugins.statistics_plugin import StatisticsPlugin
+from neuron.tools.document_indexer import DocumentIndexer
+from neuron.learning.self_improvement import SelfImprovementEngine
+
 
 class NeuralCore:
     """
-    The brain of the NEURON ecosystem.
-    Coordinates execution of specialized micro-neurons over binary synapses
-    while strictly enforcing hardware safety constraints.
+    The advanced brain of PROJECT: NEURON 0.3.0.
+    Coordinates adaptive routing, multi-stage reasoning, 4-tier memory,
+    autonomous agent planning, and self-improving execution.
     """
 
-    def __init__(self, db_path: str = ":memory:"):
+    def __init__(self, db_path: str = "neuron_store.db", memory_db_path: str = "neuron_memory.db"):
         self.hardware = HardwareSupervisor()
         self.synapse_bus = SynapseBus()
         self.registry = NeuronRegistry()
         self.storage = KnowledgeStorage(db_path=db_path)
+        self.memory = MemoryHierarchy(db_path=memory_db_path)
         self.verifier = VerificationEngine()
         self.model_runner = ModelRunner(hardware_supervisor=self.hardware)
+
+        # Advanced Phase 3 Subsystems
+        self.router = AdaptiveRouter()
+        self.reasoning_engine = AdvancedReasoningEngine(max_reflection_retries=2)
+        self.agent = AutonomousAgent()
+        self.document_indexer = DocumentIndexer(storage=self.storage)
+        self.self_improvement = SelfImprovementEngine()
+        self.plugin_manager = PluginManager()
 
         # Operational metrics
         self.total_completed_tasks: int = 0
@@ -44,8 +69,9 @@ class NeuralCore:
         self.total_blocked_tasks: int = 0
         self.task_latencies: List[float] = []
 
-        # Initialize and register the core neuron fleet
+        # Initialize neuron fleet & default plugins
         self._init_neuron_fleet()
+        self._init_plugins()
 
     def _init_neuron_fleet(self) -> None:
         """Instantiate and wire neurons to the Synapse communication bus."""
@@ -59,15 +85,25 @@ class NeuralCore:
         self.registry.register(self.math_neuron)
         self.registry.register(self.coder_neuron)
 
+    def _init_plugins(self) -> None:
+        """Load standard plugins."""
+        try:
+            stats_plugin = StatisticsPlugin()
+            self.plugin_manager.register_plugin(stats_plugin)
+        except Exception:
+            pass
+
     def process(self, prompt: str, task_id: Optional[str] = None, session_id: Optional[str] = None) -> Dict[str, Any]:
         """
-        End-to-end collective intelligence pipeline:
+        Adaptive Multi-Stage Collective Intelligence Pipeline:
         1. VRAM/RAM Pre-flight Check
         2. Reflex Intent & Security Screening
-        3. Cognitive Planning & Sub-task DAG Generation
-        4. Specialized Neuron Collaborative Execution over Synapses
-        5. Cross-Neuron Verification & Contradiction Detection
-        6. Working Memory Persistence & Result Synthesis
+        3. Adaptive Difficulty & Routing Decision
+        4. Episodic & Semantic Memory Context Retrieval
+        5. Cognitive Planning & Selective Neuron Execution
+        6. Generate-and-Verify Reflection Loop (Self-Repair)
+        7. Consensus & Contradiction Verification
+        8. Memory Consolidation & Self-Improvement Telemetry
         """
         task_id = task_id or str(uuid.uuid4())
         working_mem = WorkingMemory(task_id=task_id)
@@ -75,11 +111,10 @@ class NeuralCore:
         execution_timeline: List[Dict[str, Any]] = []
 
         with self.hardware.memory_tracer(label=f"task_{task_id[:8]}") as mem_stats:
-            # Stage 1: Reflex & Intent Classification
+            # Stage 1: Reflex & Security Screening
             t0 = time.perf_counter()
             reflex_res = self.reflex_neuron.run({"prompt": prompt})
             t_reflex = round((time.perf_counter() - t0) * 1000, 2)
-
             category = reflex_res["result"].get("category", "GENERAL")
             is_blocked = (category == "BLOCKED")
 
@@ -90,14 +125,6 @@ class NeuralCore:
                 "duration_ms": t_reflex,
                 "output": reflex_res["result"]
             })
-
-            working_mem.add_artifact(
-                artifact_id="art_reflex",
-                source_neuron=self.reflex_neuron.neuron_id,
-                data_type="reflex",
-                content=reflex_res["result"],
-                confidence=1.0 if reflex_res["success"] else 0.0
-            )
 
             if is_blocked:
                 self.total_blocked_tasks += 1
@@ -116,46 +143,58 @@ class NeuralCore:
                     "memory": mem_stats
                 }
 
-            # Stage 2: Planning & Task Decomposition
+            # Stage 2: Adaptive Difficulty & Routing Decision
             t0 = time.perf_counter()
-            planner_res = self.planner_neuron.run({"prompt": prompt, "category": category})
-            t_plan = round((time.perf_counter() - t0) * 1000, 2)
+            route_decision = self.router.route(prompt, category)
+            t_route = round((time.perf_counter() - t0) * 1000, 2)
 
             execution_timeline.append({
-                "stage": "Cognitive Planning",
-                "neuron": self.planner_neuron.neuron_id,
+                "stage": "Adaptive Neural Routing",
+                "neuron": "adaptive_router",
                 "state": "completed",
-                "duration_ms": t_plan,
-                "output": planner_res["result"]
+                "duration_ms": t_route,
+                "output": {
+                    "difficulty": route_decision.difficulty.value,
+                    "difficulty_score": route_decision.difficulty_score,
+                    "required_neurons": route_decision.required_neurons,
+                    "required_tools": route_decision.required_tools
+                }
             })
 
-            working_mem.add_artifact(
-                artifact_id="art_plan",
-                source_neuron=self.planner_neuron.neuron_id,
-                data_type="plan",
-                content=planner_res["result"]
-            )
-
-            # Stage 3: Knowledge Context Retrieval
+            # Stage 3: Episodic & Semantic Memory Retrieval
             t0 = time.perf_counter()
-            retrieved_knowledge = self.storage.search_keyword(prompt, limit=3)
-            t_retrieval = round((time.perf_counter() - t0) * 1000, 2)
-            working_mem.set_state("retrieved_knowledge", retrieved_knowledge)
+            relevant_experiences = self.memory.retrieve(prompt, limit=2)
+            t_mem = round((time.perf_counter() - t0) * 1000, 2)
+            working_mem.set_state("retrieved_memory", relevant_experiences)
 
             execution_timeline.append({
-                "stage": "Knowledge Retrieval",
-                "neuron": "storage_sqlite",
+                "stage": "4-Tier Memory Retrieval",
+                "neuron": "memory_hierarchy",
                 "state": "completed",
-                "duration_ms": t_retrieval,
-                "output": {"retrieved_items": len(retrieved_knowledge)}
+                "duration_ms": t_mem,
+                "output": {"retrieved_memories": len(relevant_experiences)}
             })
 
-            # Stage 4: Collaborative Execution via Synapses
+            # Stage 4: Cognitive Planning (Activated only when difficulty/category requires it)
+            planner_res = None
+            if route_decision.requires_planning:
+                t0 = time.perf_counter()
+                planner_res = self.planner_neuron.run({"prompt": prompt, "category": category})
+                t_plan = round((time.perf_counter() - t0) * 1000, 2)
+                execution_timeline.append({
+                    "stage": "Cognitive Planning",
+                    "neuron": self.planner_neuron.neuron_id,
+                    "state": "completed",
+                    "duration_ms": t_plan,
+                    "output": planner_res["result"]
+                })
+
+            # Stage 5: Selective Specialist Execution via Synapses
             intermediate_artifacts: List[Dict[str, Any]] = []
-            final_output_payload: Dict[str, Any] = {}
+            raw_specialist_output: Dict[str, Any] = {}
 
-            # Execute Math Neuron if applicable
-            if category in ["MATH", "COMPOSITE"]:
+            # Execute Math Neuron if selected by router
+            if "neuron_math_01" in route_decision.required_neurons:
                 t0 = time.perf_counter()
                 math_res = self.math_neuron.run({"prompt": prompt})
                 math_verif = self.verifier.verify_artifact("math", math_res["result"])
@@ -169,7 +208,7 @@ class NeuralCore:
                     confidence=math_verif["confidence"]
                 )
                 intermediate_artifacts.append(math_verif)
-                final_output_payload["math"] = math_res["result"]
+                raw_specialist_output["math"] = math_res["result"]
 
                 execution_timeline.append({
                     "stage": "Mathematical Reasoning (SymPy)",
@@ -179,8 +218,8 @@ class NeuralCore:
                     "output": math_res["result"]
                 })
 
-            # Execute Coder Neuron if applicable
-            if category in ["CODE", "COMPOSITE"]:
+            # Execute Coder Neuron if selected by router
+            if "neuron_coder_01" in route_decision.required_neurons:
                 t0 = time.perf_counter()
                 code_res = self.coder_neuron.run({"prompt": prompt, "run_tests": True})
                 code_verif = self.verifier.verify_artifact("code", code_res["result"])
@@ -194,7 +233,7 @@ class NeuralCore:
                     confidence=code_verif["confidence"]
                 )
                 intermediate_artifacts.append(code_verif)
-                final_output_payload["code"] = code_res["result"]
+                raw_specialist_output["code"] = code_res["result"]
 
                 execution_timeline.append({
                     "stage": "Code Synthesis & AST Validation",
@@ -205,11 +244,11 @@ class NeuralCore:
                 })
 
             # General reasoning / Model generation fallback
-            if category in ["REASONING", "KNOWLEDGE", "PLANNING"] or not intermediate_artifacts:
+            if category in ["REASONING", "KNOWLEDGE", "PLANNING"] or not raw_specialist_output:
                 t0 = time.perf_counter()
                 gen_res = self.model_runner.generate(prompt)
                 t_gen = round((time.perf_counter() - t0) * 1000, 2)
-                final_output_payload["reasoning"] = {
+                raw_specialist_output["reasoning"] = {
                     "text": gen_res["text"],
                     "mode": gen_res["mode"],
                     "tokens": gen_res["tokens_generated"]
@@ -222,48 +261,105 @@ class NeuralCore:
                     "output": {"mode": gen_res["mode"], "tokens": gen_res["tokens_generated"]}
                 })
 
-            # Stage 5: Cross-Neuron Verification & Consensus Check
+            # Stage 6: Advanced Multi-Stage Reasoning & Reflection (Generate-and-Verify)
             t0 = time.perf_counter()
-            consensus_check = self.verifier.detect_contradictions(intermediate_artifacts)
-            t_consensus = round((time.perf_counter() - t0) * 1000, 2)
+            reasoning_eval = self.reasoning_engine.reason_and_verify(
+                prompt=prompt,
+                category=category,
+                task_id=task_id,
+                initial_results=raw_specialist_output
+            )
+            t_reason = round((time.perf_counter() - t0) * 1000, 2)
 
-            execution_timeline.append({
-                "stage": "Consensus & Contradiction Verification",
-                "neuron": "verification_engine",
-                "state": "completed" if not consensus_check["contradiction_detected"] else "warning",
-                "duration_ms": t_consensus,
-                "output": consensus_check
-            })
+            if reasoning_eval.reflection_attempts > 0:
+                execution_timeline.append({
+                    "stage": "Cognitive Reflection & Self-Repair",
+                    "neuron": "reasoning_engine",
+                    "state": "completed",
+                    "duration_ms": t_reason,
+                    "output": {
+                        "reflection_attempts": reasoning_eval.reflection_attempts,
+                        "error_corrections": reasoning_eval.error_corrections
+                    }
+                })
+
+            # Stage 7: Consensus Verification (Only when required)
+            consensus_score = reasoning_eval.confidence_score
+            has_contradiction = not reasoning_eval.verified
+
+            if route_decision.requires_consensus:
+                t0 = time.perf_counter()
+                consensus_check = self.verifier.detect_contradictions(intermediate_artifacts)
+                t_consensus = round((time.perf_counter() - t0) * 1000, 2)
+                consensus_score = min(consensus_score, consensus_check["consensus_score"])
+                has_contradiction = has_contradiction or consensus_check["contradiction_detected"]
+
+                execution_timeline.append({
+                    "stage": "Consensus & Contradiction Verification",
+                    "neuron": "verification_engine",
+                    "state": "completed" if not has_contradiction else "warning",
+                    "duration_ms": t_consensus,
+                    "output": consensus_check
+                })
 
             total_elapsed_ms = (time.perf_counter() - start_time) * 1000
             self.task_latencies.append(total_elapsed_ms)
             self.total_completed_tasks += 1
 
-            # Stage 6: Formulate Final Result
+            # Stage 8: Experience Consolidation & Self-Improvement Telemetry
+            status_str = "SUCCESS" if not has_contradiction else "VERIFICATION_WARNING"
+            
+            # Store validated experience in Episodic Memory
+            self.memory.store(
+                tier="episodic",
+                title=f"Task: {prompt[:40]}",
+                content=json.dumps({"prompt": prompt, "results": reasoning_eval.synthesis}),
+                tags=[category, route_decision.difficulty.value],
+                reliability=consensus_score,
+                metadata={"task_id": task_id, "duration_ms": total_elapsed_ms}
+            )
+
+            # Record in Long-term task history
+            plan_summary = str(planner_res["result"].get("stages", [])) if planner_res else "Direct Routing"
+            self.storage.record_task_history(
+                task_id=task_id,
+                prompt=prompt,
+                category=category,
+                plan=plan_summary,
+                output=str(reasoning_eval.synthesis),
+                status=status_str,
+                latency_ms=total_elapsed_ms
+            )
+
+            # Log to Self-Improvement Engine
+            self.self_improvement.observe_task(
+                task_id=task_id,
+                category=category,
+                difficulty=route_decision.difficulty.value,
+                selected_neurons=route_decision.required_neurons,
+                duration_ms=total_elapsed_ms,
+                verification_status=status_str,
+                consensus_score=consensus_score,
+                reflection_attempts=reasoning_eval.reflection_attempts
+            )
+
+            # Formulate Final Result
             synthesis = {
                 "task_id": task_id,
                 "session_id": session_id,
-                "status": "SUCCESS" if not consensus_check["contradiction_detected"] else "VERIFICATION_WARNING",
+                "status": status_str,
                 "category": category,
-                "consensus_score": consensus_check["consensus_score"],
-                "results": final_output_payload,
+                "difficulty": route_decision.difficulty.value,
+                "difficulty_score": route_decision.difficulty_score,
+                "consensus_score": consensus_score,
+                "results": reasoning_eval.synthesis,
+                "reflection_repairs": reasoning_eval.error_corrections,
                 "execution_timeline": execution_timeline,
                 "working_memory": working_mem.summary(),
                 "synapse_telemetry": self.synapse_bus.get_telemetry(),
                 "hardware_telemetry": mem_stats,
                 "total_latency_ms": round(total_elapsed_ms, 2)
             }
-
-            # Record in Long-term task history
-            self.storage.record_task_history(
-                task_id=task_id,
-                prompt=prompt,
-                category=category,
-                plan=str(planner_res["result"].get("stages", [])),
-                output=str(final_output_payload),
-                status=synthesis["status"],
-                latency_ms=total_elapsed_ms
-            )
 
             return synthesis
 
@@ -272,7 +368,9 @@ class NeuralCore:
         hw = self.hardware.get_telemetry()
         model_info = self.model_runner.get_info()
         bus_info = self.synapse_bus.get_telemetry()
-        
+        router_info = self.router.get_telemetry()
+        improvement_info = self.self_improvement.get_insights()
+
         cpu_pct = psutil.cpu_percent(interval=None)
         avg_lat = (sum(self.task_latencies) / len(self.task_latencies)) if self.task_latencies else 0.0
         sorted_lats = sorted(self.task_latencies)
@@ -298,13 +396,17 @@ class NeuralCore:
                 "avg_latency_ms": round(avg_lat, 2),
                 "p95_latency_ms": round(p95_lat, 2)
             },
+            "router": router_info,
             "synapse": bus_info,
+            "improvement": improvement_info,
+            "plugins": self.plugin_manager.list_plugins(),
             "neurons_count": len(self.registry.list_neurons())
         }
 
     def close(self) -> None:
         """Release all resources and close database connections."""
         self.model_runner.unload_model()
+        self.memory.close()
         self.storage.close()
         self.synapse_bus.clear()
         self.hardware.purge_cache()
