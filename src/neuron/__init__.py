@@ -5,24 +5,8 @@ Please update your imports to 'import gliacore'.
 """
 
 import warnings
-from gliacore import (
-    GliaCore,
-    NeuralCore,
-    HardwareSupervisor,
-    VRAMBudget,
-    SynapseBus,
-    SynapseMessage,
-    MessageType,
-    GliaCoreMCPServer,
-    GliaCoreMCPClient,
-    JSONExtractor,
-    SchemaValidator,
-    ToolRegistry,
-    SwarmConsensusEngine,
-    __version__,
-    __author__,
-    __license__,
-)
+from typing import Any
+import gliacore
 
 warnings.warn(
     "The 'neuron' package namespace is deprecated and has been rebranded to 'gliacore'. "
@@ -31,21 +15,24 @@ warnings.warn(
     stacklevel=2
 )
 
-__all__ = [
-    "GliaCore",
-    "NeuralCore",
-    "HardwareSupervisor",
-    "VRAMBudget",
-    "SynapseBus",
-    "SynapseMessage",
-    "MessageType",
-    "GliaCoreMCPServer",
-    "GliaCoreMCPClient",
-    "JSONExtractor",
-    "SchemaValidator",
-    "ToolRegistry",
-    "SwarmConsensusEngine",
+__version__ = gliacore.__version__
+__author__ = gliacore.__author__
+__license__ = gliacore.__license__
+
+__all__ = list(gliacore.__all__) + [
     "__version__",
     "__author__",
     "__license__",
+    "Neuron",
+    "NeuronEngine",
 ]
+
+
+def __getattr__(name: str) -> Any:
+    if name in ("Neuron", "NeuronEngine"):
+        return getattr(gliacore, "NeuralCore")
+    return getattr(gliacore, name)
+
+
+def __dir__():
+    return __all__

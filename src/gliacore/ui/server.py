@@ -12,10 +12,6 @@ from pathlib import Path
 
 from aiohttp import web
 
-from gliacore.core.engine import GliaCore
-from gliacore.mcp.server import GliaCoreMCPServer
-from gliacore.verification.schema import JSONExtractor, SchemaValidator
-
 STATIC_DIR = Path(__file__).parent / "static"
 
 
@@ -24,6 +20,9 @@ NeuronServer = None
 
 class GliaCoreServer:
     def __init__(self, db_path=None, memory_db_path=None, auto_load_model: bool = True):
+        from gliacore.core.engine import GliaCore
+        from gliacore.mcp.server import GliaCoreMCPServer
+
         self.core = GliaCore(db_path=db_path, memory_db_path=memory_db_path)
         self.mcp_server = GliaCoreMCPServer(core=self.core)
         self.app = web.Application()
@@ -396,6 +395,8 @@ class GliaCoreServer:
             body = await request.json()
         except Exception:
             return web.json_response({"error": "Invalid JSON"}, status=400)
+        from gliacore.verification.schema import SchemaValidator
+
         data = body.get("data")
         schema = body.get("schema", {})
         valid, errors = SchemaValidator.validate(data, schema)
@@ -407,6 +408,8 @@ class GliaCoreServer:
             body = await request.json()
         except Exception:
             return web.json_response({"error": "Invalid JSON"}, status=400)
+        from gliacore.verification.schema import JSONExtractor
+
         raw_text = body.get("text", "")
         success, parsed, message = JSONExtractor.parse_and_repair(raw_text)
         return web.json_response({"success": success, "parsed": parsed, "message": message})
@@ -466,15 +469,21 @@ def main() -> None:
 
     args, _ = parser.parse_known_args()
 
+    if args.command == "version":
+        from gliacore import __version__
+        print(f"GliaCore v{__version__}")
+        return
+
+    from gliacore.core.engine import GliaCore
+
     if args.command == "mcp":
+        from gliacore.mcp.server import GliaCoreMCPServer
+
         server = GliaCoreMCPServer()
         try:
             server.run_stdio()
         finally:
             server.close()
-    elif args.command == "version":
-        from gliacore import __version__
-        print(f"GliaCore v{__version__}")
     elif args.command == "tools":
         core = GliaCore(auto_load_model=False)
         tools = core.list_tools()
