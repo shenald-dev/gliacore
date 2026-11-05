@@ -41,7 +41,7 @@ class KnowledgeStorage:
                     self.conn.execute("PRAGMA journal_mode = WAL;")
                     self.conn.execute("PRAGMA synchronous = NORMAL;")
                     self.conn.execute("PRAGMA busy_timeout = 5000;")
-                except Exception:
+                except sqlite3.OperationalError:
                     pass
 
             with self.conn:
@@ -78,7 +78,7 @@ class KnowledgeStorage:
                             id, title, content, tokenize='porter'
                         )
                     """)
-                except Exception:
+                except sqlite3.OperationalError:
                     pass
 
     def store_knowledge(self, doc_id: str, title: str, category: str, content: str, embedding: Optional[List[float]] = None) -> None:
@@ -95,7 +95,7 @@ class KnowledgeStorage:
                         "INSERT OR REPLACE INTO knowledge_fts (id, title, content) VALUES (?, ?, ?)",
                         (doc_id, title, content)
                     )
-                except Exception:
+                except sqlite3.OperationalError:
                     pass
 
     def search_keyword(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
@@ -109,7 +109,7 @@ class KnowledgeStorage:
                 )
                 for row in cursor.fetchall():
                     results.append({"id": row[0], "title": row[1], "content": row[2], "match_type": "fts5"})
-            except Exception:
+            except (sqlite3.OperationalError, sqlite3.DatabaseError):
                 cursor = self.conn.execute(
                     "SELECT id, title, content FROM knowledge WHERE content LIKE ? OR title LIKE ? LIMIT ?",
                     (f"%{query}%", f"%{query}%", limit)
@@ -159,5 +159,5 @@ class KnowledgeStorage:
         with self._lock:
             try:
                 self.conn.close()
-            except Exception:
+            except sqlite3.Error:
                 pass
