@@ -140,7 +140,7 @@ Independently benchmarked across 50 diverse evaluation tasks spanning arithmetic
 
 ### Installation
 ```bash
-git clone https://github.com/username/gliacore.git
+git clone https://github.com/shenald-dev/gliacore.git
 cd gliacore
 pip install -e .
 ```

@@ -2,8 +2,8 @@
 title: How I Built an Autonomous, Zero-Hallucination Micro-AI on a 4GB GPU (And Why Giant Monoliths Are Overrated)
 published: true
 tags: ai, machinelearning, python, gpu, opensource
-cover_image: https://raw.githubusercontent.com/username/gliacore/main/assets/banner.png
-canonical_url: https://github.com/username/gliacore
+cover_image: https://raw.githubusercontent.com/shenald-dev/gliacore/main/assets/banner.png
+canonical_url: https://github.com/shenald-dev/gliacore
 description: Inside the Astrocyte-Neuron architecture: Combining Ampere CUDA Tensor Cores, SymPy exact math, AST syntax self-repair, and 4-tier persistent SQLite memory on an NVIDIA RTX 2050.
 ---
 
@@ -135,7 +135,7 @@ We ran 50 evaluation tasks spanning arithmetic, algebra, code synthesis, AST ana
 You can clone and run GliaCore right now:
 
 ```bash
-git clone https://github.com/username/gliacore.git
+git clone https://github.com/shenald-dev/gliacore.git
 cd gliacore
 pip install -e .
 ```
@@ -161,6 +161,6 @@ You don't need a multi-billion parameter model in the cloud to build an intellig
 By pairing **compact, edge-optimized language models with exact symbolic solvers, AST syntax parsers, and persistent local databases**, you can achieve **0% math hallucination, 100% privacy, and sub-second execution** on the laptop you already own.
 
 The project is completely open source under **GPLv3**:
-👉 **[GitHub Repository: GliaCore 0.3.0](https://github.com/username/gliacore)**
+👉 **[GitHub Repository: GliaCore 0.3.0](https://github.com/shenald-dev/gliacore)**
 
 *If you found this technical breakdown useful, drop a star on GitHub and share your thoughts in the comments below!*
