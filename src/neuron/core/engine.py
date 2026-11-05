@@ -83,7 +83,7 @@ class NeuralCore:
         self.reflex_neuron = ReflexNeuron(bus=self.synapse_bus)
         self.planner_neuron = PlannerNeuron(bus=self.synapse_bus)
         self.math_neuron = MathVerifierNeuron(bus=self.synapse_bus)
-        self.coder_neuron = CoderNeuron(bus=self.synapse_bus)
+        self.coder_neuron = CoderNeuron(bus=self.synapse_bus, model_runner=self.model_runner)
 
         self.registry.register(self.reflex_neuron)
         self.registry.register(self.planner_neuron)
@@ -247,6 +247,54 @@ class NeuralCore:
                     "duration_ms": t_code,
                     "output": {"syntax_valid": code_res["result"].get("syntax_valid")}
                 })
+
+            # GPU-Accelerated Synthesis & Explanation Layer
+            if self.model_runner.is_real_weights and "reasoning" not in raw_specialist_output:
+                t0 = time.perf_counter()
+                if "math" in raw_specialist_output:
+                    m = raw_specialist_output["math"]
+                    calc_val = m.get("result", {}).get("numeric", m.get("result", {}).get("exact", m.get("result", {}).get("solutions")))
+                    math_expl_prompt = (
+                        f"Explain this mathematical problem and step-by-step derivation concisely:\n"
+                        f"Problem: {prompt}\n"
+                        f"Exact Verified Result: {calc_val}\n"
+                        f"Provide the step-by-step mathematical reasoning."
+                    )
+                    gen_res = self.model_runner.generate(math_expl_prompt, max_new_tokens=256)
+                    t_gen = round((time.perf_counter() - t0) * 1000, 2)
+                    raw_specialist_output["reasoning"] = {
+                        "text": gen_res["text"],
+                        "mode": gen_res["mode"],
+                        "tokens": gen_res["tokens_generated"]
+                    }
+                    execution_timeline.append({
+                        "stage": "GPU Mathematical Derivation & Explanation",
+                        "neuron": "model_runner",
+                        "state": "completed",
+                        "duration_ms": t_gen,
+                        "output": {"mode": gen_res["mode"], "tokens": gen_res["tokens_generated"]}
+                    })
+                elif "code" in raw_specialist_output:
+                    c = raw_specialist_output["code"]
+                    code_text = c.get("synthesized_code", "")
+                    code_expl_prompt = (
+                        f"Provide a brief 2-3 sentence overview of this implementation, including its time and space complexity:\n"
+                        f"```python\n{code_text[:350]}\n```"
+                    )
+                    gen_res = self.model_runner.generate(code_expl_prompt, max_new_tokens=256)
+                    t_gen = round((time.perf_counter() - t0) * 1000, 2)
+                    raw_specialist_output["reasoning"] = {
+                        "text": gen_res["text"],
+                        "mode": gen_res["mode"],
+                        "tokens": gen_res["tokens_generated"]
+                    }
+                    execution_timeline.append({
+                        "stage": "GPU Code Explanation & Complexity",
+                        "neuron": "model_runner",
+                        "state": "completed",
+                        "duration_ms": t_gen,
+                        "output": {"mode": gen_res["mode"], "tokens": gen_res["tokens_generated"]}
+                    })
 
             # General reasoning / Model generation fallback
             if category in ["REASONING", "KNOWLEDGE", "PLANNING"] or not raw_specialist_output:

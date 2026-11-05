@@ -65,6 +65,12 @@ class ModelRunner:
 
         self._total_tokens: int = 0
         self._total_gen_time_sec: float = 0.0
+        if self.supervisor.cuda_available:
+            try:
+                torch.backends.cuda.matmul.allow_tf32 = True
+                torch.backends.cudnn.allow_tf32 = True
+            except Exception:
+                pass
 
     def get_info(self) -> Dict[str, Any]:
         """Return comprehensive metadata for Chat UI and telemetry dashboards."""
@@ -180,7 +186,7 @@ class ModelRunner:
             self.supervisor.purge_cache()
             return {"success": True, "status": "UNLOADED"}
 
-    def generate(self, prompt: str, max_new_tokens: int = 256) -> Dict[str, Any]:
+    def generate(self, prompt: str, max_new_tokens: int = 512) -> Dict[str, Any]:
         """
         Execute inference. If real weights are loaded, run transformer generation.
         Otherwise, provide high-quality structured neural-symbolic synthesis.
@@ -220,6 +226,7 @@ class ModelRunner:
                             do_sample=True,
                             temperature=0.7,
                             top_p=0.9,
+                            repetition_penalty=1.1,
                             pad_token_id=self.tokenizer.eos_token_id
                         )
 

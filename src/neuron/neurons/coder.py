@@ -1,8 +1,9 @@
 """
-Code Intelligence & AST Verification Neuron for NEURON
-Generates, statically inspects, and verifies code structures.
+Code Intelligence & AST Verification Neuron for PROJECT: GLIACORE / NEURON
+Generates, statically inspects, and verifies code structures via GPU SLM and AST parser.
 """
 
+import re
 from typing import Dict, Any, List, Optional
 from neuron.neurons.base import BaseNeuron
 from neuron.tools.ast_parser import ASTParserTool
@@ -13,10 +14,10 @@ from neuron.synapse.bus import SynapseBus
 class CoderNeuron(BaseNeuron):
     """
     Code generation, static analysis, and verification unit.
-    Integrates with AST parser and sandbox to eliminate syntax hallucinations.
+    Integrates with GPU foundation model, AST parser, and sandbox to eliminate syntax hallucinations.
     """
 
-    def __init__(self, bus: SynapseBus = None):
+    def __init__(self, bus: SynapseBus = None, model_runner = None):
         super().__init__(
             neuron_id="neuron_coder_01",
             name="Code Intelligence & AST Neuron",
@@ -25,6 +26,7 @@ class CoderNeuron(BaseNeuron):
         )
         self.ast_tool = ASTParserTool()
         self.sandbox = CodeSandbox()
+        self.model_runner = model_runner
 
     def execute(self, task_payload: Dict[str, Any]) -> Dict[str, Any]:
         prompt = task_payload.get("prompt", "")
@@ -52,11 +54,10 @@ class CoderNeuron(BaseNeuron):
                 "execution": execution_res
             }
 
-        # 2. Algorithmic code synthesis pattern
-        # Deterministic generation for common algorithms or prompt requests
-        synthesized_code = self._synthesize_snippet(prompt)
+        # 2. GPU-powered or algorithmic code synthesis pattern
+        synthesized_code = self._synthesize_with_gpu_or_fallback(prompt)
         syntax_check = self.ast_tool.validate_syntax(synthesized_code)
-        structure = self.ast_tool.extract_structure(synthesized_code)
+        structure = self.ast_tool.extract_structure(synthesized_code) if syntax_check["valid"] else {}
 
         execution_res = None
         if run_tests and syntax_check["valid"]:
@@ -70,6 +71,30 @@ class CoderNeuron(BaseNeuron):
             "structure": structure,
             "execution": execution_res
         }
+
+    def _synthesize_with_gpu_or_fallback(self, prompt: str) -> str:
+        """Synthesize Python code using GPU foundation model if available, else fallback."""
+        if self.model_runner and getattr(self.model_runner, "is_real_weights", False) and self.model_runner.model is not None:
+            try:
+                system_prompt = (
+                    "You are an expert Python engineer. Write concise, clean, correct, runnable Python code. "
+                    "Output ONLY the python code enclosed inside a ```python ``` markdown block. "
+                    "Do not include conversational filler outside the code block."
+                )
+                coder_prompt = f"Implement in Python:\n{prompt}\nReturn complete implementation inside ```python ```."
+                gen = self.model_runner.generate(coder_prompt, max_new_tokens=384)
+                text = gen.get("text", "")
+
+                match = re.search(r"```(?:python)?\s*(.*?)\s*```", text, re.DOTALL)
+                candidate_code = match.group(1).strip() if match else text.strip()
+
+                chk = self.ast_tool.validate_syntax(candidate_code)
+                if chk["valid"]:
+                    return candidate_code
+            except Exception as e:
+                print(f"[CoderNeuron] GPU synthesis fallback: {e}")
+
+        return self._synthesize_snippet(prompt)
 
     def _synthesize_snippet(self, prompt: str) -> str:
         """Synthesize clean, strictly-typed Python snippets based on prompt keywords."""
