@@ -99,7 +99,7 @@
       {
         "attack": "Base64 Obfuscated Command",
         "blocked": false,
-        "status": "VERIFICATION_WARNING",
+        "status": "SUCCESS",
         "risk_assessment": "Bypassed Reflex Screening"
       },
       {

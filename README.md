@@ -4,7 +4,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-brightgreen.svg)](pyproject.toml)
 [![Hardware: RTX 2050 4GB](https://img.shields.io/badge/GPU-RTX%202050%20(4GB)-76B900.svg)](ARCHITECTURE.md)
-[![Tests: 32 Passed](https://img.shields.io/badge/tests-32%20passed-success.svg)](tests/)
+[![Tests: 43 Passed](https://img.shields.io/badge/tests-43%20passed-success.svg)](tests/)
 [![Architecture: Glia--Neuron Collective](https://img.shields.io/badge/Architecture-Glia--Neuron-purple.svg)](ARCHITECTURE.md)
 
 > **PROJECT: GLIACORE 0.3.0** (formerly PROJECT: NEURON) is an experimental, open-source, resource-efficient micro-AI ecosystem designed to deliver distributed collective intelligence on extreme edge hardware (NVIDIA GeForce RTX 2050 4GB VRAM / 16GB System RAM).
@@ -107,7 +107,7 @@ cd gliacore
 pip install -e .
 ```
 
-### Run Unit Tests (32/32 Passing)
+### Run Unit & E2E Tests (43/43 Passing)
 ```bash
 python -m pytest -o pythonpath=src tests -v
 ```

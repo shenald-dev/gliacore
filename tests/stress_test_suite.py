@@ -24,11 +24,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 import torch
 import psutil
-from neuron.core.engine import NeuralCore
-from neuron.core.hardware import HardwareSupervisor
-from neuron.synapse.messages import SynapseMessage, MessageType
-from neuron.synapse.bus import SynapseBus
-from neuron.neurons.base import BaseNeuron
+from gliacore.core.engine import NeuralCore
+from gliacore.core.hardware import HardwareSupervisor
+from gliacore.synapse.messages import SynapseMessage, MessageType
+from gliacore.synapse.bus import SynapseBus
+from gliacore.neurons.base import BaseNeuron
 
 
 # ==============================================================================

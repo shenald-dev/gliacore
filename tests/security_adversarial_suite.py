@@ -22,11 +22,11 @@ from typing import Dict, Any, List
 # Ensure src is on sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from neuron.core.engine import NeuralCore
-from neuron.neurons.reflex import ReflexNeuron
-from neuron.tools.code_sandbox import CodeSandbox
-from neuron.memory.storage import KnowledgeStorage
-from neuron.synapse.messages import SynapseMessage, MessageType
+from gliacore.core.engine import NeuralCore
+from gliacore.neurons.reflex import ReflexNeuron
+from gliacore.tools.code_sandbox import CodeSandbox
+from gliacore.memory.storage import KnowledgeStorage
+from gliacore.synapse.messages import SynapseMessage, MessageType
 
 
 def test_command_injection(core: NeuralCore) -> Dict[str, Any]:

@@ -1,8 +1,8 @@
-name: NEURON Continuous Integration
+name: GliaCore Continuous Integration
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, release/* ]
   pull_request:
     branches: [ main ]
 
@@ -25,13 +25,16 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
-          pip install pytest pytest-cov
+          pip install -e ".[dev]"
 
-      - name: Run Test Suite
+      - name: Run Full Test Suite (Unit, Integration, E2E)
         run: |
           python -m pytest -o pythonpath=src tests -v --durations=10
 
-      - name: Run 3-Way Ablation Benchmark
+      - name: Run Adversarial Security Penetration Suite
         run: |
-          python benchmarks/run_ablation.py
+          python -m tests.security_adversarial_suite
+
+      - name: Run 5-Way Architectural Benchmark Suite
+        run: |
+          python benchmarks/phase3_benchmark.py

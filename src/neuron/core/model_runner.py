@@ -114,9 +114,12 @@ class ModelRunner:
                 from transformers import AutoTokenizer, AutoModelForCausalLM
 
                 print(f"[ModelRunner] Attempting to load {meta['repo_id']} onto {target_device}...")
-                self.tokenizer = AutoTokenizer.from_pretrained(meta["repo_id"], trust_remote_code=True)
+                try:
+                    self.tokenizer = AutoTokenizer.from_pretrained(meta["repo_id"], trust_remote_code=True, local_files_only=True)
+                except Exception:
+                    raise FileNotFoundError(f"Model weights for {meta['repo_id']} are not present in local cache.")
                 
-                load_kwargs = {"trust_remote_code": True}
+                load_kwargs = {"trust_remote_code": True, "local_files_only": True}
                 if target_device == "cuda:0":
                     load_kwargs["torch_dtype"] = torch.float16
                     load_kwargs["device_map"] = "auto"

@@ -2,46 +2,46 @@
   "workload_stress": {
     "batch_1": {
       "task_count": 1,
-      "total_time_sec": 0.28,
-      "throughput_tasks_per_sec": 3.56,
-      "avg_latency_ms": 280.72,
-      "p95_latency_ms": 280.72,
-      "start_ram_mb": 426.89,
-      "end_ram_mb": 554.93,
-      "ram_growth_mb": 128.05,
+      "total_time_sec": 0.25,
+      "throughput_tasks_per_sec": 4.01,
+      "avg_latency_ms": 249.39,
+      "p95_latency_ms": 249.39,
+      "start_ram_mb": 427.21,
+      "end_ram_mb": 554.9,
+      "ram_growth_mb": 127.69,
       "error_count": 0
     },
     "batch_10": {
       "task_count": 10,
-      "total_time_sec": 1.76,
-      "throughput_tasks_per_sec": 5.7,
-      "avg_latency_ms": 175.57,
-      "p95_latency_ms": 241.54,
-      "start_ram_mb": 554.93,
-      "end_ram_mb": 555.97,
-      "ram_growth_mb": 1.04,
+      "total_time_sec": 1.71,
+      "throughput_tasks_per_sec": 5.85,
+      "avg_latency_ms": 170.88,
+      "p95_latency_ms": 221.95,
+      "start_ram_mb": 554.9,
+      "end_ram_mb": 555.91,
+      "ram_growth_mb": 1.02,
       "error_count": 0
     },
     "batch_50": {
       "task_count": 50,
-      "total_time_sec": 8.26,
-      "throughput_tasks_per_sec": 6.05,
-      "avg_latency_ms": 165.29,
-      "p95_latency_ms": 228.02,
-      "start_ram_mb": 555.97,
-      "end_ram_mb": 556.75,
-      "ram_growth_mb": 0.79,
+      "total_time_sec": 8.6,
+      "throughput_tasks_per_sec": 5.82,
+      "avg_latency_ms": 171.96,
+      "p95_latency_ms": 236.79,
+      "start_ram_mb": 555.91,
+      "end_ram_mb": 556.23,
+      "ram_growth_mb": 0.32,
       "error_count": 0
     },
     "batch_100": {
       "task_count": 100,
-      "total_time_sec": 16.94,
-      "throughput_tasks_per_sec": 5.9,
-      "avg_latency_ms": 169.37,
-      "p95_latency_ms": 250.87,
-      "start_ram_mb": 556.75,
-      "end_ram_mb": 557.46,
-      "ram_growth_mb": 0.71,
+      "total_time_sec": 17.63,
+      "throughput_tasks_per_sec": 5.67,
+      "avg_latency_ms": 176.28,
+      "p95_latency_ms": 244.24,
+      "start_ram_mb": 556.23,
+      "end_ram_mb": 556.91,
+      "ram_growth_mb": 0.68,
       "error_count": 0
     }
   },
@@ -51,9 +51,9 @@
       "total_requests": 40,
       "success_count": 40,
       "failure_count": 0,
-      "throughput_req_per_sec": 6.79,
-      "avg_latency_ms": 292.75,
-      "max_latency_ms": 462.66,
+      "throughput_req_per_sec": 7.16,
+      "avg_latency_ms": 277.5,
+      "max_latency_ms": 354.94,
       "errors_observed": []
     },
     "concurrency_5": {
@@ -61,9 +61,9 @@
       "total_requests": 40,
       "success_count": 40,
       "failure_count": 0,
-      "throughput_req_per_sec": 7.32,
-      "avg_latency_ms": 652.76,
-      "max_latency_ms": 907.94,
+      "throughput_req_per_sec": 7.29,
+      "avg_latency_ms": 652.18,
+      "max_latency_ms": 986.5,
       "errors_observed": []
     },
     "concurrency_10": {
@@ -71,9 +71,9 @@
       "total_requests": 40,
       "success_count": 40,
       "failure_count": 0,
-      "throughput_req_per_sec": 8.01,
-      "avg_latency_ms": 1082.5,
-      "max_latency_ms": 1716.3,
+      "throughput_req_per_sec": 7.38,
+      "avg_latency_ms": 1211.0,
+      "max_latency_ms": 2385.63,
       "errors_observed": []
     },
     "concurrency_20": {
@@ -81,9 +81,9 @@
       "total_requests": 40,
       "success_count": 40,
       "failure_count": 0,
-      "throughput_req_per_sec": 8.23,
-      "avg_latency_ms": 1793.53,
-      "max_latency_ms": 2662.08,
+      "throughput_req_per_sec": 7.26,
+      "avg_latency_ms": 2120.77,
+      "max_latency_ms": 3046.19,
       "errors_observed": []
     }
   },
@@ -93,7 +93,7 @@
       "allocated_mb": 0.0,
       "reserved_mb": 0.0,
       "usable_headroom_mb": 3500.0,
-      "system_ram_free_mb": 5948.34
+      "system_ram_free_mb": 4512.44
     },
     "allocation_boundary_tests": [
       {
@@ -145,7 +145,7 @@
         "neuron_id": "neuron_crash_test",
         "specialization": "crash",
         "result": null,
-        "latency_ms": 14.94,
+        "latency_ms": 34.21,
         "error": "Simulated catastrophic neuron failure"
       }
     },
@@ -154,7 +154,7 @@
     },
     "sandbox_normal_exec": {
       "handled": true,
-      "elapsed_sec": 0.0775
+      "elapsed_sec": 0.08
     }
   }
 }
