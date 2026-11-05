@@ -91,7 +91,9 @@ class ReflexNeuron(BaseNeuron):
 
         has_code = any(kw in prompt_lower for kw in [
             "def ", "function", "class ", "python", "code", "algorithm", "implement",
-            "binary search", "regex", "script", "return ", "syntax", "write code", "analyze"
+            "binary search", "regex", "script", "return ", "syntax", "write code", "analyze",
+            "html", "css", "javascript", "landing page", "webpage", "website", "frontend",
+            "backend", "react", "component", "create a website", "build a website", "landing page"
         ])
 
         has_planning = any(kw in prompt_lower for kw in [

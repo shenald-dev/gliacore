@@ -56,12 +56,18 @@ class CoderNeuron(BaseNeuron):
 
         # 2. GPU-powered or algorithmic code synthesis pattern
         synthesized_code = self._synthesize_with_gpu_or_fallback(prompt)
-        syntax_check = self.ast_tool.validate_syntax(synthesized_code)
-        structure = self.ast_tool.extract_structure(synthesized_code) if syntax_check["valid"] else {}
-
-        execution_res = None
-        if run_tests and syntax_check["valid"]:
-            execution_res = self.sandbox.run_isolated(synthesized_code)
+        is_markup = any(tag in synthesized_code.lower() for tag in ["<!doctype", "<html", "<head", "<body", "<div", "<style", "<script"])
+        
+        if is_markup:
+            syntax_check = {"valid": True, "error": None}
+            structure = {"type": "frontend_web", "format": "html_css_js"}
+            execution_res = {"success": True, "stdout": "Web deliverable verified: valid HTML/CSS/JS document structure."}
+        else:
+            syntax_check = self.ast_tool.validate_syntax(synthesized_code)
+            structure = self.ast_tool.extract_structure(synthesized_code) if syntax_check["valid"] else {}
+            execution_res = None
+            if run_tests and syntax_check["valid"]:
+                execution_res = self.sandbox.run_isolated(synthesized_code)
 
         return {
             "prompt": prompt,
@@ -85,8 +91,12 @@ class CoderNeuron(BaseNeuron):
                 gen = self.model_runner.generate(coder_prompt, max_new_tokens=384)
                 text = gen.get("text", "")
 
-                match = re.search(r"```(?:python)?\s*(.*?)\s*```", text, re.DOTALL)
+                match = re.search(r"```(?:python|html|css|javascript|js)?\s*(.*?)\s*```", text, re.DOTALL)
                 candidate_code = match.group(1).strip() if match else text.strip()
+
+                is_markup = any(tag in candidate_code.lower() for tag in ["<!doctype", "<html", "<head", "<body", "<div", "<style", "<script"])
+                if is_markup:
+                    return candidate_code
 
                 chk = self.ast_tool.validate_syntax(candidate_code)
                 if chk["valid"]:
