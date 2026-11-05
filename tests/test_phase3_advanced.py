@@ -14,17 +14,17 @@ import os
 import tempfile
 import pytest
 
-from neuron.routing.router import AdaptiveRouter, TaskDifficulty
-from neuron.reasoning.engine import AdvancedReasoningEngine
-from neuron.memory.hierarchy import MemoryHierarchy
-from neuron.tools.numpy_engine import NumPyEngine
-from neuron.tools.repo_explorer import RepositoryExplorer
-from neuron.tools.document_indexer import DocumentIndexer
-from neuron.agent.planner import AutonomousAgent, TaskState
-from neuron.plugins.base import PluginManager, PluginManifest, BasePlugin
-from neuron.plugins.statistics_plugin import StatisticsPlugin
-from neuron.learning.self_improvement import SelfImprovementEngine
-from neuron.core.engine import NeuralCore
+from gliacore.routing.router import AdaptiveRouter, TaskDifficulty
+from gliacore.reasoning.engine import AdvancedReasoningEngine
+from gliacore.memory.hierarchy import MemoryHierarchy
+from gliacore.tools.numpy_engine import NumPyEngine
+from gliacore.tools.repo_explorer import RepositoryExplorer
+from gliacore.tools.document_indexer import DocumentIndexer
+from gliacore.agent.planner import AutonomousAgent, TaskState
+from gliacore.plugins.base import PluginManager, PluginManifest, BasePlugin
+from gliacore.plugins.statistics_plugin import StatisticsPlugin
+from gliacore.learning.self_improvement import SelfImprovementEngine
+from gliacore.core.engine import NeuralCore
 
 
 # 1. Test Adaptive Router

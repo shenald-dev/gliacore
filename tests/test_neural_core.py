@@ -3,7 +3,7 @@ Integration tests for Neural Core end-to-end execution
 """
 
 import pytest
-from neuron.core.engine import NeuralCore
+from gliacore.core.engine import NeuralCore
 
 
 def test_neural_core_math_pipeline():

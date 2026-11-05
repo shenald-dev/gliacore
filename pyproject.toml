@@ -3,16 +3,16 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "neuron-ai"
+name = "gliacore-ai"
 version = "0.3.0"
-description = "An Edge-Optimized, Modular Micro-AI Intelligence Ecosystem"
+description = "An Edge-Optimized, Modular Micro-AI Collective Intelligence Ecosystem"
 authors = [
     { name = "Shenal Diluksha", email = "shenal@example.com" }
 ]
 license = { text = "GPL-3.0-or-later" }
 readme = "README.md"
 requires-python = ">=3.10"
-keywords = ["ai", "edge-computing", "micro-models", "mcp", "qwen", "slm", "multi-agent"]
+keywords = ["ai", "edge-computing", "gliacore", "collective-intelligence", "micro-models", "mcp", "qwen", "slm", "multi-agent"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -43,6 +43,10 @@ dev = [
     "pytest-asyncio>=0.21.0",
     "ruff>=0.4.0",
 ]
+
+[project.scripts]
+gliacore = "gliacore.ui.server:main"
+neuron = "gliacore.ui.server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

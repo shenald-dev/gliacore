@@ -20,14 +20,14 @@ import statistics
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 import torch
-from neuron.core.engine import NeuralCore
-from neuron.core.hardware import HardwareSupervisor
-from neuron.neurons.math_verifier import MathVerifierNeuron
-from neuron.neurons.coder import CoderNeuron
-from neuron.neurons.reflex import ReflexNeuron
-from neuron.neurons.planner import PlannerNeuron
-from neuron.tools.math_engine import MathEngine
-from neuron.tools.ast_parser import ASTParserTool
+from gliacore.core.engine import NeuralCore
+from gliacore.core.hardware import HardwareSupervisor
+from gliacore.neurons.math_verifier import MathVerifierNeuron
+from gliacore.neurons.coder import CoderNeuron
+from gliacore.neurons.reflex import ReflexNeuron
+from gliacore.neurons.planner import PlannerNeuron
+from gliacore.tools.math_engine import MathEngine
+from gliacore.tools.ast_parser import ASTParserTool
 
 
 class MonolithRawEvaluator:
@@ -191,7 +191,7 @@ class IsolatedNeuronsEvaluator:
 
 def run_comprehensive_benchmark():
     print("=" * 80)
-    print("PROJECT: NEURON — INDEPENDENT 4-WAY REPRODUCTION BENCHMARK")
+    print("PROJECT: GLIACORE — INDEPENDENT 4-WAY REPRODUCTION BENCHMARK")
     print("Testbed: HP Victus | NVIDIA GeForce RTX 2050 (4 GB VRAM) | 16 GB System RAM")
     print("=" * 80)
 

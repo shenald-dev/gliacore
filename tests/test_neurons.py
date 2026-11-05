@@ -3,11 +3,11 @@ Unit tests for Specialized Neurons & Verification Engine
 """
 
 import pytest
-from neuron.neurons.reflex import ReflexNeuron
-from neuron.neurons.math_verifier import MathVerifierNeuron
-from neuron.neurons.coder import CoderNeuron
-from neuron.neurons.planner import PlannerNeuron
-from neuron.verification.consensus import VerificationEngine
+from gliacore.neurons.reflex import ReflexNeuron
+from gliacore.neurons.math_verifier import MathVerifierNeuron
+from gliacore.neurons.coder import CoderNeuron
+from gliacore.neurons.planner import PlannerNeuron
+from gliacore.verification.consensus import VerificationEngine
 
 
 def test_reflex_neuron_classification():

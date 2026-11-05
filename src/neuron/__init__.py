@@ -1,18 +1,33 @@
 """
-PROJECT: NEURON
-An Edge-Optimized, Modular Micro-AI Intelligence Ecosystem
+PROJECT: NEURON (Legacy Compatibility Stub for GliaCore 0.3.0)
+The 'neuron' package has been rebranded to 'gliacore'.
+Please update your imports to 'import gliacore'.
 """
 
-__version__ = "0.1.0"
-__author__ = "Shenal Diluksha"
-__license__ = "GPL-3.0-or-later"
+import warnings
 
-from neuron.core.engine import NeuralCore
-from neuron.core.hardware import HardwareSupervisor, VRAMBudget
-from neuron.synapse.bus import SynapseBus
-from neuron.synapse.messages import SynapseMessage, MessageType
+warnings.warn(
+    "The 'neuron' package namespace is deprecated and has been rebranded to 'gliacore'. "
+    "Please update your imports to 'import gliacore'.",
+    FutureWarning,
+    stacklevel=2
+)
+
+from gliacore import (
+    GliaCore,
+    NeuralCore,
+    HardwareSupervisor,
+    VRAMBudget,
+    SynapseBus,
+    SynapseMessage,
+    MessageType,
+    __version__,
+    __author__,
+    __license__,
+)
 
 __all__ = [
+    "GliaCore",
     "NeuralCore",
     "HardwareSupervisor",
     "VRAMBudget",

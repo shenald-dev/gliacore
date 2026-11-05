@@ -4,7 +4,7 @@ Unit tests for Hardware Supervisor & VRAM Budget
 
 import pytest
 import torch
-from neuron.core.hardware import HardwareSupervisor, MAX_USABLE_VRAM_MB
+from gliacore.core.hardware import HardwareSupervisor, MAX_USABLE_VRAM_MB
 
 
 def test_hardware_supervisor_telemetry():

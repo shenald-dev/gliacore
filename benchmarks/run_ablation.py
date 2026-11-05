@@ -1,5 +1,5 @@
 """
-Ablation Benchmark Suite for PROJECT: NEURON
+Ablation Benchmark Suite for PROJECT: GLIACORE
 Evaluates 3 architectural paradigms on HP Victus RTX 2050:
 1. Experiment A: Monolithic Single Model Baseline
 2. Experiment B: Isolated Specialized Neurons (No Synapse / No Consensus)
@@ -17,11 +17,11 @@ from typing import Dict, Any, List
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 import torch
-from neuron.core.engine import NeuralCore
-from neuron.core.hardware import HardwareSupervisor
-from neuron.neurons.math_verifier import MathVerifierNeuron
-from neuron.neurons.coder import CoderNeuron
-from neuron.neurons.reflex import ReflexNeuron
+from gliacore.core.engine import NeuralCore
+from gliacore.core.hardware import HardwareSupervisor
+from gliacore.neurons.math_verifier import MathVerifierNeuron
+from gliacore.neurons.coder import CoderNeuron
+from gliacore.neurons.reflex import ReflexNeuron
 
 
 def simulate_cuda_workload(supervisor: HardwareSupervisor, tensor_size_mb: float = 120.0):
@@ -146,7 +146,7 @@ class IsolatedNeuronsBaseline:
 
 def run_full_ablation():
     print("=" * 80)
-    print("PROJECT: NEURON — 3-WAY EXPERIMENTAL ABLATION BENCHMARK")
+    print("PROJECT: GLIACORE — 3-WAY EXPERIMENTAL ABLATION BENCHMARK")
     print("Hardware: HP Victus | NVIDIA RTX 2050 (4 GB VRAM) | 16 GB System RAM")
     print("=" * 80)
 

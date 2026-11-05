@@ -3,8 +3,8 @@ Unit tests for Synapse Binary Message Serialization and Bus
 """
 
 import pytest
-from neuron.synapse.messages import SynapseMessage, MessageType
-from neuron.synapse.bus import SynapseBus
+from gliacore.synapse.messages import SynapseMessage, MessageType
+from gliacore.synapse.bus import SynapseBus
 
 
 def test_synapse_message_serialization_roundtrip():

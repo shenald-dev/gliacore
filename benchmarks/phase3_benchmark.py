@@ -1,5 +1,5 @@
 """
-PROJECT: NEURON 0.3.0 — Phase 3 Comprehensive 5-Way Benchmark Suite
+PROJECT: GLIACORE 0.3.0 — Phase 3 Comprehensive 5-Way Benchmark Suite
 Evaluates 5 distinct architectural configurations across 50 diverse tasks:
 
 Condition A: Monolith Raw (Generative SLM baseline without deterministic tools)
@@ -22,17 +22,17 @@ from typing import Dict, Any, List, Optional
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 import torch
-from neuron.core.hardware import HardwareSupervisor
-from neuron.core.engine import NeuralCore
-from neuron.neurons.math_verifier import MathVerifierNeuron
-from neuron.neurons.coder import CoderNeuron
-from neuron.neurons.reflex import ReflexNeuron
-from neuron.neurons.planner import PlannerNeuron
-from neuron.tools.math_engine import MathEngine
-from neuron.tools.ast_parser import ASTParserTool
-from neuron.routing.router import AdaptiveRouter, TaskDifficulty
-from neuron.reasoning.engine import AdvancedReasoningEngine
-from neuron.memory.hierarchy import MemoryHierarchy
+from gliacore.core.hardware import HardwareSupervisor
+from gliacore.core.engine import NeuralCore
+from gliacore.neurons.math_verifier import MathVerifierNeuron
+from gliacore.neurons.coder import CoderNeuron
+from gliacore.neurons.reflex import ReflexNeuron
+from gliacore.neurons.planner import PlannerNeuron
+from gliacore.tools.math_engine import MathEngine
+from gliacore.tools.ast_parser import ASTParserTool
+from gliacore.routing.router import AdaptiveRouter, TaskDifficulty
+from gliacore.reasoning.engine import AdvancedReasoningEngine
+from gliacore.memory.hierarchy import MemoryHierarchy
 
 
 class MonolithRawEvaluator:
@@ -192,7 +192,7 @@ class Phase2NeuronNetworkEvaluator:
 
 def run_phase3_benchmark():
     print("=" * 95)
-    print("PROJECT: NEURON 0.3.0 — PHASE 3 COMPREHENSIVE 5-WAY COMPARATIVE BENCHMARK")
+    print("PROJECT: GLIACORE 0.3.0 — PHASE 3 COMPREHENSIVE 5-WAY COMPARATIVE BENCHMARK")
     print("Testbed: HP Victus | NVIDIA GeForce RTX 2050 (4 GB VRAM) | 16 GB System RAM | Windows 11")
     print("=" * 95)
 
@@ -410,7 +410,7 @@ def run_phase3_benchmark():
 
     # Formatted Benchmark Results Matrix
     print("\n" + "=" * 105)
-    print("PROJECT: NEURON 0.3.0 — PHASE 3 COMPREHENSIVE 5-WAY BENCHMARK RESULTS (N = 50 Tasks)")
+    print("PROJECT: GLIACORE 0.3.0 — PHASE 3 COMPREHENSIVE 5-WAY BENCHMARK RESULTS (N = 50 Tasks)")
     print("=" * 105)
     header = f"{'Metric':<24} | {'A: Monolith':<13} | {'B: Isolated':<13} | {'C: Phase 2':<13} | {'D: Phase 3 AR':<14} | {'E: Phase 3 Full':<14}"
     print(header)
