@@ -197,9 +197,10 @@ class ModelRunner:
             if self.is_real_weights and self.model is not None and self.tokenizer is not None:
                 try:
                     system_prompt = (
-                        "You are GliaCore (formerly PROJECT: NEURON), an edge-optimized AI assistant running "
-                        "locally on the user's hardware with NVIDIA GPU acceleration. Provide clear, direct, "
-                        "concise, and helpful answers."
+                        "You are GliaCore 0.3.0, an advanced edge-optimized collective intelligence system "
+                        "running locally with dedicated NVIDIA GPU hardware acceleration. You excel in analytical "
+                        "reasoning, software engineering, mathematics, and structured communication. Think step-by-step, "
+                        "provide high-depth explanations, and deliver precise, actionable responses."
                     )
                     messages = [
                         {"role": "system", "content": system_prompt},
