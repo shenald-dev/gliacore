@@ -306,5 +306,7 @@ def run(host: str = "127.0.0.1", port: int = 8000) -> None:
         server.close()
 
 
+main = run
+
 if __name__ == "__main__":
-    run()
+    main()
