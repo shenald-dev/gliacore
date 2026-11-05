@@ -36,6 +36,8 @@ from gliacore.plugins.base import PluginManager
 from gliacore.plugins.statistics_plugin import StatisticsPlugin
 from gliacore.tools.document_indexer import DocumentIndexer
 from gliacore.learning.self_improvement import SelfImprovementEngine
+from gliacore.tools.registry import ToolRegistry
+from gliacore.verification.swarm import SwarmConsensusEngine
 
 
 class NeuralCore:
@@ -82,6 +84,8 @@ class NeuralCore:
         self.document_indexer = DocumentIndexer(storage=self.storage)
         self.self_improvement = SelfImprovementEngine()
         self.plugin_manager = PluginManager()
+        self.tool_registry = ToolRegistry()
+        self.swarm_verifier = SwarmConsensusEngine()
 
         # Operational metrics
         self.total_completed_tasks: int = 0
@@ -92,6 +96,7 @@ class NeuralCore:
         # Initialize neuron fleet & default plugins
         self._init_neuron_fleet()
         self._init_plugins()
+        self._register_default_tools()
 
     def _init_neuron_fleet(self) -> None:
         """Instantiate and wire neurons to the Synapse communication bus."""
@@ -590,6 +595,45 @@ class NeuralCore:
             "plugins": self.plugin_manager.list_plugins(),
             "neurons_count": len(self.registry.list_neurons())
         }
+
+    def _register_default_tools(self) -> None:
+        """Register default ecosystem tools into the dynamic tool registry."""
+        def math_solve(expression: str) -> Dict[str, Any]:
+            """Evaluate mathematical expression or equation using SymPy."""
+            res = self.math_neuron.run({"prompt": expression}).get("result", {})
+            return res.get("result", res)
+
+        def code_run(code: str, timeout_sec: float = 5.0) -> Dict[str, Any]:
+            """Execute Python code in isolated AST-screened sandbox."""
+            return self.coder_neuron.run({"code": code, "run_tests": True, "timeout_sec": timeout_sec}).get("result", {})
+
+        def memory_query(query: str, limit: int = 5) -> List[Dict[str, Any]]:
+            """Search episodic and semantic memory hierarchy."""
+            return self.memory.retrieve(query, limit=limit)
+
+        self.tool_registry.register_tool(
+            name="math_solve",
+            handler=math_solve,
+            description="Evaluate mathematical expression or algebraic equation with exact SymPy CAS."
+        )
+        self.tool_registry.register_tool(
+            name="code_run",
+            handler=code_run,
+            description="Execute Python code snippet in an isolated sandbox with AST verification."
+        )
+        self.tool_registry.register_tool(
+            name="memory_query",
+            handler=memory_query,
+            description="Search 4-tier persistent memory for related experiences or facts."
+        )
+
+    def execute_tool(self, name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+        """Execute a tool via the dynamic tool registry."""
+        return self.tool_registry.execute_tool(name, arguments)
+
+    def list_tools(self) -> List[Dict[str, Any]]:
+        """List all tools registered in the dynamic registry."""
+        return [t.to_mcp_dict() for t in self.tool_registry.list_tools()]
 
     def close(self) -> None:
         """Release all resources and close database connections."""

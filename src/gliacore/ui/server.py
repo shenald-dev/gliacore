@@ -371,6 +371,25 @@ class GliaCoreServer:
         tools = [tool.to_dict() for tool in self.mcp_server._tools.values()]
         return web.json_response({"tools": tools, "count": len(tools)})
 
+    async def handle_tools_list(self, request: web.Request) -> web.Response:
+        """List registered dynamic tools."""
+        tools = self.core.list_tools()
+        return web.json_response({"tools": tools, "count": len(tools)})
+
+    async def handle_tool_execute(self, request: web.Request) -> web.Response:
+        """Execute a tool dynamically via ToolRegistry."""
+        try:
+            body = await request.json()
+        except Exception:
+            return web.json_response({"error": "Invalid JSON"}, status=400)
+        tool_name = body.get("name")
+        args = body.get("arguments", {})
+        if not tool_name:
+            return web.json_response({"error": "Tool name is required"}, status=400)
+        loop = asyncio.get_running_loop()
+        res = await loop.run_in_executor(None, self.core.execute_tool, tool_name, args)
+        return web.json_response(res)
+
     async def handle_schema_validate(self, request: web.Request) -> web.Response:
         """Validate JSON data against a provided schema."""
         try:
@@ -432,6 +451,19 @@ def main() -> None:
     # Version command
     subparsers.add_parser("version", help="Print GliaCore version")
 
+    # Tools command
+    subparsers.add_parser("tools", help="List all registered dynamic tools in the ecosystem")
+
+    # Telemetry command
+    subparsers.add_parser("telemetry", help="Display real-time hardware, VRAM, and neuron metrics")
+
+    # One-shot Chat command
+    chat_parser = subparsers.add_parser("chat", help="Execute a prompt through GliaCore from terminal")
+    chat_parser.add_argument("prompt", help="Prompt or task to execute")
+
+    # Interactive Console command
+    subparsers.add_parser("console", help="Launch interactive command-line session")
+
     args, _ = parser.parse_known_args()
 
     if args.command == "mcp":
@@ -443,6 +475,64 @@ def main() -> None:
     elif args.command == "version":
         from gliacore import __version__
         print(f"GliaCore v{__version__}")
+    elif args.command == "tools":
+        core = GliaCore(auto_load_model=False)
+        tools = core.list_tools()
+        print(f"\nRegistered GliaCore Tools ({len(tools)} total):")
+        print("-" * 65)
+        for t in tools:
+            print(f"  * {t['name']:<22} | {t.get('description', '')[:40]}")
+        print("-" * 65)
+        core.close()
+    elif args.command == "telemetry":
+        core = GliaCore(auto_load_model=False)
+        telem = core.get_system_telemetry()
+        gpu = telem.get("gpu", {})
+        sys_ram = telem.get("system", {})
+        print("\n--- GliaCore Hardware Telemetry ---")
+        print(f"GPU Device:       {gpu.get('device_name', 'None')}")
+        print(f"CUDA Available:   {gpu.get('cuda_available')}")
+        print(f"VRAM Allocated:   {gpu.get('allocated_vram_mb', 0)} MB / {gpu.get('total_vram_mb', 0)} MB")
+        print(f"Host Free RAM:    {sys_ram.get('free_ram_mb', 0)} MB")
+        print(f"Task Latencies:   {telem.get('tasks', {}).get('avg_latency_ms', 0)} ms avg")
+        core.close()
+    elif args.command == "chat":
+        core = GliaCore(auto_load_model=False)
+        res = core.process(args.prompt)
+        print(f"\n[Status: {res['status']}] (Latency: {res['total_latency_ms']} ms)")
+        print("-" * 60)
+        results = res.get("results", {})
+        if "math" in results:
+            print(f"Math Result: {results['math'].get('result')}")
+        elif "code" in results:
+            print(f"Code Output:\n{results['code'].get('synthesized_code')}")
+        elif "reasoning" in results:
+            print(results["reasoning"].get("text", ""))
+        else:
+            print(res.get("output", "Processed."))
+        core.close()
+    elif args.command == "console":
+        core = GliaCore(auto_load_model=False)
+        print("GliaCore Interactive Terminal Console. Type 'exit' to quit.\n")
+        while True:
+            try:
+                line = input("gliacore> ").strip()
+                if not line:
+                    continue
+                if line in ("exit", "quit", "q"):
+                    break
+                res = core.process(line)
+                print(f"[{res['status']} | {res['total_latency_ms']}ms]")
+                results = res.get("results", {})
+                if "math" in results:
+                    print(f"Result: {results['math'].get('result')}")
+                elif "code" in results:
+                    print(results['code'].get('synthesized_code'))
+                elif "reasoning" in results:
+                    print(results["reasoning"].get("text", ""))
+            except (KeyboardInterrupt, EOFError):
+                break
+        core.close()
     else:
         host = getattr(args, "host", "127.0.0.1")
         port = getattr(args, "port", 8000)

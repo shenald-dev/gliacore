@@ -14,6 +14,8 @@ from gliacore.synapse.messages import SynapseMessage, MessageType
 from gliacore.mcp.server import GliaCoreMCPServer
 from gliacore.mcp.client import GliaCoreMCPClient
 from gliacore.verification.schema import JSONExtractor, SchemaValidator
+from gliacore.tools.registry import ToolRegistry, ToolDefinition
+from gliacore.verification.swarm import SwarmConsensusEngine
 
 __all__ = [
     "GliaCore",
@@ -27,4 +29,7 @@ __all__ = [
     "GliaCoreMCPClient",
     "JSONExtractor",
     "SchemaValidator",
+    "ToolRegistry",
+    "ToolDefinition",
+    "SwarmConsensusEngine",
 ]

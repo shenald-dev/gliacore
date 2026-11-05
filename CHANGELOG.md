@@ -32,12 +32,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Schema Validation:** Built `gliacore.verification.schema.SchemaValidator` for lightweight type and required-property verification without external heavyweight dependencies.
 - **Consensus Integration:** Enhanced `VerificationEngine` with `"schema"` artifact verification.
 
+
+### Dynamic Tool & Function Calling Engine
+- **ToolRegistry & `@tool` Decorator:** Implemented `gliacore.tools.registry.ToolRegistry` supporting decorator-based registration of arbitrary Python functions.
+- **Automatic JSON Schema Generation:** Inspects function signatures, docstrings, and type annotations to generate standard JSON schemas for function calling.
+- **REST Tool Endpoints:** Added `/api/tools` (introspection) and `/api/tools/execute` (dynamic execution).
+- **Built-in Utility Fleet:** Pre-registered deterministic utilities (`datetime_now`, `math_solve`, `code_run`, `memory_query`).
+
+### Best-of-N Swarm Consensus Engine
+- **Multi-Candidate Verification:** Built `gliacore.verification.swarm.SwarmConsensusEngine` ranking multiple neural and symbolic candidate outputs.
+- **Contradiction Resolution:** Automatically detects divergences between LLM prose and ground-truth SymPy calculations, rectifying hallucinations before delivery.
+- **Confidence Calibration:** Assigns mathematically grounded confidence scores based on AST static validation and CAS numeric equivalence.
+
+### GliaCore Studio 0.4.0 Web UI & CLI Subcommands
+- **Live SSE Token Streaming:** Updated web UI to render token streams in real-time with an animated typing cursor and live timeline stage updates.
+- **MCP Gateway Explorer Workspace:** Added visual inspection tab for all registered MCP tools and 1-click Claude Desktop configuration snippets.
+- **Schema Lab Playground:** Added interactive JSON auto-repair workbench in the web interface.
+- **Comprehensive CLI Suite:** Added `gliacore tools`, `gliacore chat "<prompt>"`, `gliacore telemetry`, and `gliacore console`.
+
 ### Core Runtime & Windows CPU Stability
 - **Windows CPU Acceleration Fix:** Fixed fatal memory-mapping access violation in `accelerate`'s multi-threaded `_materialize_copy` by disabling `device_map="cpu"` and setting `low_cpu_mem_usage = False` on CPU targets.
 - **CLI Subcommand Suite:** Enhanced CLI entry points to support `gliacore mcp`, `gliacore serve --host <host> --port <port>`, and `gliacore version`.
 
 ### Testing & Code Quality
-- **Test Suite Expansion:** Expanded test suite from 43 to **62 passed tests (100% pass rate)** including new test suites `test_mcp_gateway.py`, `test_schema_engine.py`, and `test_streaming.py`.
+- **Test Suite Expansion:** Expanded test suite from 43 to **75 passed tests (100% pass rate)** including new test suites `test_mcp_gateway.py`, `test_schema_engine.py`, and `test_streaming.py`, `test_tool_registry.py`, `test_swarm_consensus.py`, and `test_cli_commands.py`.
 - **Zero Lint Errors:** Fixed 144 initial lint warnings down to 0 errors via Ruff.
 
 ---

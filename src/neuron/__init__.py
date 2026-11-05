@@ -1,5 +1,5 @@
 """
-PROJECT: NEURON (Legacy Compatibility Stub for GliaCore 0.3.0)
+PROJECT: NEURON (Legacy Compatibility Stub for GliaCore 0.4.0)
 The 'neuron' package has been rebranded to 'gliacore'.
 Please update your imports to 'import gliacore'.
 """
@@ -13,6 +13,12 @@ from gliacore import (
     SynapseBus,
     SynapseMessage,
     MessageType,
+    GliaCoreMCPServer,
+    GliaCoreMCPClient,
+    JSONExtractor,
+    SchemaValidator,
+    ToolRegistry,
+    SwarmConsensusEngine,
     __version__,
     __author__,
     __license__,
@@ -33,6 +39,12 @@ __all__ = [
     "SynapseBus",
     "SynapseMessage",
     "MessageType",
+    "GliaCoreMCPServer",
+    "GliaCoreMCPClient",
+    "JSONExtractor",
+    "SchemaValidator",
+    "ToolRegistry",
+    "SwarmConsensusEngine",
     "__version__",
     "__author__",
     "__license__",

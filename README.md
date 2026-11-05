@@ -30,7 +30,7 @@
     <img src="https://img.shields.io/badge/Math_Hallucination-0.0%25_(SymPy_Engine)-success?style=flat-square" alt="Zero Hallucination Math" />
     <img src="https://img.shields.io/badge/Code_Engine-AST_Sandbox_+_Self--Repair-orange?style=flat-square" alt="AST Code Engine" />
     <img src="https://img.shields.io/badge/Security_Reflex-%3C0.2ms_Interception-red?style=flat-square" alt="Security Reflex" />
-    <img src="https://img.shields.io/badge/tests-62%20passed%20(100%25)-brightgreen?style=flat-square" alt="Tests 43/43" />
+    <img src="https://img.shields.io/badge/tests-75%20passed%20(100%25)-brightgreen?style=flat-square" alt="Tests 75/75" />
   </p>
 
   <p>
@@ -294,6 +294,64 @@ Small edge models (0.5B - 1.5B) often hallucinate malformed JSON or markdown fen
 - **Lightweight Schema Validation:** Enforces required properties and primitive/composite types with informative error attribution.
 
 ---
+
+---
+
+## 🛠️ Dynamic Tool & Function Calling Engine
+
+GliaCore includes a high-performance, decorator-based tool registry (`gliacore.tools.registry.ToolRegistry`) allowing developers to expose Python functions as autonomous agent tools with automatic JSON Schema generation:
+
+```python
+from gliacore.tools.registry import ToolRegistry
+
+registry = ToolRegistry()
+
+@registry.register(description="Query stock ticker prices from market data")
+def get_stock_price(ticker: str) -> dict:
+    return {"ticker": ticker.upper(), "price": 182.50}
+
+# Execute with parameter validation
+result = registry.execute_tool("get_stock_price", {"ticker": "aapl"})
+print(result) # {'success': True, 'tool': 'get_stock_price', 'result': {'ticker': 'AAPL', 'price': 182.5}}
+```
+
+---
+
+## 🐝 Best-of-N Swarm Consensus Engine
+
+To overcome edge micro-model hallucinations, GliaCore deploys a **Swarm Consensus Engine** (`SwarmConsensusEngine`) that evaluates candidate outputs through a multi-factor rubric:
+1. **Deterministic Ground-Truth Alignment:** Verifies mathematical steps and numerical solutions against exact SymPy CAS derivations.
+2. **AST Static Analysis & Sandboxing:** Validates Python syntax trees and runtime exit codes in isolated namespaces.
+3. **Automated Contradiction Rectification:** When neural model text diverges from symbolic truth (e.g. model claims 420 but SymPy calculated 470), the consensus engine automatically detects the contradiction and aligns the output with the mathematical ground-truth!
+
+---
+
+## 🖥️ Command-Line Interface (CLI)
+
+GliaCore features a comprehensive terminal suite for headless and edge deployments:
+
+```bash
+# 1. Interactive terminal session
+gliacore console
+
+# 2. One-shot terminal command execution
+gliacore chat "Calculate 15 * 8 and explain step-by-step"
+
+# 3. List all registered dynamic tools & schemas
+gliacore tools
+
+# 4. Inspect real-time GPU VRAM, RAM, and neuron metrics
+gliacore telemetry
+
+# 5. Launch Model Context Protocol (MCP) server over stdio for Claude Desktop / Cursor
+gliacore mcp
+
+# 6. Start GliaCore Studio web server
+gliacore serve --host 127.0.0.1 --port 8000
+```
+
+---
+
 ## 6. Quickstart & Installation
 
 ### Installation
@@ -311,7 +369,7 @@ python -m gliacore.ui.server
 # Open browser at: http://127.0.0.1:8000
 ```
 
-### Run Unit & End-to-End Tests (62/62 Passing)
+### Run Unit & End-to-End Tests (75/75 Passing)
 ```bash
 python -m pytest -o pythonpath=src tests -v
 ```
