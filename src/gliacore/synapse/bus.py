@@ -5,10 +5,14 @@ Thread-safe, bounded, low-latency inter-neuron communication and routing.
 
 import time
 import queue
+import logging
 import threading
 from collections import defaultdict, deque
 from typing import Dict, List, Callable, Optional, Any
 from gliacore.synapse.messages import SynapseMessage
+
+
+logger = logging.getLogger(__name__)
 
 
 class SynapseBus:
@@ -77,15 +81,15 @@ class SynapseBus:
         for callback in topic_callbacks:
             try:
                 callback(unpacked_msg)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("Synapse topic callback exception: %s", e)
 
         # 3. Wildcard listeners
         for callback in wildcard_callbacks:
             try:
                 callback(unpacked_msg)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("Synapse wildcard callback exception: %s", e)
 
     def receive(self, neuron_id: str, timeout: Optional[float] = 0.05) -> Optional[SynapseMessage]:
         """Receive the next message for a specific neuron from its mailbox."""
